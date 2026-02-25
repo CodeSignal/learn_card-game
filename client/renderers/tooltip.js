@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { formatEffect, isAntiSynergy } from './shared.js';
+import { formatEffect, isAntiSynergy, renderIcon } from './shared.js';
 
 export function showTooltip(card, e, opts = {}) {
   if (uiState.draggedCardId) return;
@@ -45,7 +45,7 @@ export function showTooltip(card, e, opts = {}) {
 
   uiState.tooltip.innerHTML = `
     ${inactiveWarning}
-    <div class="tooltip-title">${card.icon} ${card.name}</div>
+    <div class="tooltip-title">${renderIcon(card.icon)} ${card.name}</div>
     <div class="tooltip-desc">${descHtml}</div>
     <div class="tooltip-effects">${effectRows}</div>
     ${synergyRows ? `<div class="tooltip-synergies">${synergyRows}</div>` : ''}

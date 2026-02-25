@@ -100,6 +100,7 @@ export class GameEngine {
     this.currentEncounterIndex = 0;
     this.handCardIds = [];
     this.retriesUsed = 0;
+    this.carriedCardIds = [];
 
     // Telemetry for grading
     this.attemptLog = [];
@@ -157,6 +158,9 @@ export class GameEngine {
     }
     if (Array.isArray(savedState?.draftLog)) {
       this.draftLog = savedState.draftLog;
+    }
+    if (Array.isArray(savedState?.carriedCardIds)) {
+      this.carriedCardIds = savedState.carriedCardIds.filter(id => this.cardMap.has(id));
     }
   }
 
@@ -264,6 +268,7 @@ export class GameEngine {
     const nextIdx = this.currentEncounterIndex + 1;
     const nextEnc = this.campaign?.encounters[nextIdx];
     const clearBoard = nextEnc?.carryForward === false;
+    this.carriedCardIds = clearBoard ? [] : [...this.boardCardIds];
     this.currentEncounterIndex++;
     if (clearBoard) this.boardCardIds = [];
     this.scenario = nextScenario;
@@ -678,6 +683,7 @@ export class GameEngine {
       state.retriesUsed = this.retriesUsed;
       state.attemptLog = this.attemptLog;
       state.draftLog = this.draftLog;
+      state.carriedCardIds = [...this.carriedCardIds];
     }
 
     return state;

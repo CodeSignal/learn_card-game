@@ -21,7 +21,9 @@
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
+"dependencies": {
+  "dotenv": "^16.4.5",
+  "sharp": "^0.34.5",
     "ws": "^8.14.2"
   },
   "devDependencies": {

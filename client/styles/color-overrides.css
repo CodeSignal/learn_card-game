@@ -1,0 +1,48 @@
+/*
+ * Local color overrides for the card game.
+ * Extends the design-system's colors.css with missing Lightest alert variants
+ * and dark-mode-friendly semi-transparent alert backgrounds using color-mix().
+ */
+
+:root {
+  --Colors-Alert-Success-Lightest: var(--Colors-Base-Accent-Green-20);
+  --Colors-Alert-Error-Lightest: var(--Colors-Base-Accent-Red-20);
+  --Colors-Alert-Warning-Lightest: var(--Colors-Base-Accent-Orange-20);
+  --Colors-Alert-Info-Lightest: var(--Colors-Base-Accent-Sky-Blue-20);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --Colors-Alert-Success-Default: var(--Colors-Base-Accent-Green-400);
+    --Colors-Alert-Success-Lightest: color-mix(in srgb, var(--Colors-Base-Accent-Green-400) 6%, transparent);
+    --Colors-Alert-Success-Lighter: color-mix(in srgb, var(--Colors-Base-Accent-Green-400) 12%, transparent);
+    --Colors-Alert-Success-Light: color-mix(in srgb, var(--Colors-Base-Accent-Green-400) 20%, transparent);
+    --Colors-Alert-Success-Medium: var(--Colors-Base-Accent-Green-300);
+    --Colors-Alert-Success-Medium-Dark: var(--Colors-Base-Accent-Green-500);
+    --Colors-Alert-Success-Dark: var(--Colors-Base-Accent-Green-700);
+
+    --Colors-Alert-Error-Default: var(--Colors-Base-Accent-Red-300);
+    --Colors-Alert-Error-Lightest: color-mix(in srgb, var(--Colors-Base-Accent-Red-400) 6%, transparent);
+    --Colors-Alert-Error-Lighter: color-mix(in srgb, var(--Colors-Base-Accent-Red-400) 12%, transparent);
+    --Colors-Alert-Error-Light: color-mix(in srgb, var(--Colors-Base-Accent-Red-400) 20%, transparent);
+    --Colors-Alert-Error-Medium: var(--Colors-Base-Accent-Red-200);
+    --Colors-Alert-Error-Medium-Dark: var(--Colors-Base-Accent-Red-500);
+    --Colors-Alert-Error-Dark: var(--Colors-Base-Accent-Red-700);
+
+    --Colors-Alert-Warning-Default: var(--Colors-Base-Accent-Orange-400);
+    --Colors-Alert-Warning-Lightest: color-mix(in srgb, var(--Colors-Base-Accent-Orange-400) 6%, transparent);
+    --Colors-Alert-Warning-Lighter: color-mix(in srgb, var(--Colors-Base-Accent-Orange-400) 12%, transparent);
+    --Colors-Alert-Warning-Light: color-mix(in srgb, var(--Colors-Base-Accent-Orange-400) 20%, transparent);
+    --Colors-Alert-Warning-Medium: var(--Colors-Base-Accent-Orange-300);
+    --Colors-Alert-Warning-Medium-Dark: var(--Colors-Base-Accent-Orange-500);
+    --Colors-Alert-Warning-Dark: var(--Colors-Base-Accent-Orange-700);
+
+    --Colors-Alert-Info-Default: var(--Colors-Base-Accent-Sky-Blue-400);
+    --Colors-Alert-Info-Lightest: color-mix(in srgb, var(--Colors-Base-Accent-Sky-Blue-400) 6%, transparent);
+    --Colors-Alert-Info-Lighter: color-mix(in srgb, var(--Colors-Base-Accent-Sky-Blue-400) 12%, transparent);
+    --Colors-Alert-Info-Light: color-mix(in srgb, var(--Colors-Base-Accent-Sky-Blue-400) 20%, transparent);
+    --Colors-Alert-Info-Medium: var(--Colors-Base-Accent-Sky-Blue-300);
+    --Colors-Alert-Info-Medium-Dark: var(--Colors-Base-Accent-Sky-Blue-500);
+    --Colors-Alert-Info-Dark: var(--Colors-Base-Accent-Sky-Blue-700);
+  }
+}

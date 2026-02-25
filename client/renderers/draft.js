@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS } from './shared.js';
+import { TYPE_COLORS, renderIcon } from './shared.js';
 import { hideTooltip } from './tooltip.js';
 
 export function showDraftScreen({ onDraftConfirmed }) {
@@ -62,7 +62,7 @@ function createDraftCard(card, picksRequired) {
     : '';
 
   el.innerHTML = `
-    <div class="draft-card-icon">${card.icon}</div>
+    <div class="draft-card-icon">${renderIcon(card.icon)}</div>
     <div class="draft-card-name">${card.name}</div>
     <div class="draft-card-type">${card.type}</div>
     ${bestForEl}

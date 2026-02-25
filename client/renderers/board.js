@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, deduplicateSynergies, renderSynergyRow } from './shared.js';
+import { TYPE_COLORS, deduplicateSynergies, renderSynergyRow, renderIcon } from './shared.js';
 import { showTooltip, hideTooltip, moveTooltip } from './tooltip.js';
 import { showCardDetail } from './card-detail.js';
 import { updateDropZoneHighlight, clearDropZoneHighlight } from './hand.js';
@@ -40,7 +40,7 @@ export function renderBoardSlots(justPlayedCardId, { onCardRemoved }) {
       <div class="slot-cost-badge">⬡ ${card.cost}</div>
       ${prereqBadge}
       ${carriedBadge}
-      <span class="slot-icon">${card.icon}</span>
+      <span class="slot-icon">${renderIcon(card.icon)}</span>
       <span class="slot-name">${card.name}</span>
       <div class="slot-type-strip ${card.type}"></div>
       <button class="slot-remove" title="Remove">✕</button>

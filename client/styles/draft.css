@@ -115,6 +115,11 @@
 .draft-card-icon {
   font-size: 28px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  flex-shrink: 0;
 }
 
 .draft-card-name {

@@ -28,6 +28,13 @@ export const TYPE_COLORS = {
   compute: '#f4511e',
 };
 
+export function renderIcon(icon, cls = '') {
+  if (icon && (icon.startsWith('/') || icon.startsWith('http'))) {
+    return `<img src="${icon}" alt="" class="card-icon-img${cls ? ' ' + cls : ''}" />`;
+  }
+  return icon || '';
+}
+
 function fmtK(n) {
   return n >= 10000 ? `${(n / 1000).toFixed(1)}K` : n.toLocaleString();
 }
@@ -83,8 +90,8 @@ export function renderSynergyRow(s, engine, { showNames = false } = {}) {
   const rowClass = anti ? 'synergy-row anti' : 'synergy-row';
 
   const pair = showNames
-    ? `${src.icon} ${src.name} + ${tgt.icon} ${tgt.name}`
-    : `${src.icon} + ${tgt.icon}`;
+    ? `${renderIcon(src.icon)} ${src.name} + ${renderIcon(tgt.icon)} ${tgt.name}`
+    : `${renderIcon(src.icon)} + ${renderIcon(tgt.icon)}`;
 
   return `<div class="${rowClass}">
     <span class="synergy-pair">${icon} ${pair}</span>

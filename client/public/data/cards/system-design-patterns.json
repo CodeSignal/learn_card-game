@@ -7,319 +7,643 @@
       "id": "event-driven-runtime",
       "name": "Event-driven Runtime",
       "type": "backend",
-      "icon": "⚡",
+      "icon": "/data/icons/system-design-patterns/event-driven-runtime.png",
       "cost": 2,
       "description": "Non-blocking I/O loop handles thousands of concurrent connections on a single thread. Examples: Node.js, Deno, Go.",
       "bestFor": "Real-time apps, WebSocket connections, high-concurrency APIs with many simultaneous clients",
       "notGreatFor": "CPU-heavy processing or ML inference — a thread-per-request model handles blocking work better",
-      "effects": { "latency": -50, "throughput": 1500, "reliability": 1.5, "monthlyCost": 100 },
+      "effects": {
+        "latency": -50,
+        "throughput": 1500,
+        "reliability": 1.5,
+        "monthlyCost": 100
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "document-store", "metric": "throughput", "bonus": 500, "reason": "Native async document access, no ORM overhead" }
+        {
+          "with": "document-store",
+          "metric": "throughput",
+          "bonus": 500,
+          "reason": "Native async document access, no ORM overhead"
+        }
       ],
-      "tags": ["backend", "runtime", "async"]
+      "tags": [
+        "backend",
+        "runtime",
+        "async"
+      ]
     },
     {
       "id": "thread-based-backend",
       "name": "Thread-per-request Backend",
       "type": "backend",
-      "icon": "🧵",
+      "icon": "/data/icons/system-design-patterns/thread-based-backend.png",
       "cost": 2,
       "description": "Synchronous request handling on a thread pool. Each request blocks until complete. Examples: Flask, Django, Rails, Spring.",
       "bestFor": "CPU-bound tasks, ML model inference, data processing pipelines, teams with Python/Ruby/JVM expertise",
       "notGreatFor": "High-concurrency real-time connections — threads are expensive at 10K+ concurrent users",
-      "effects": { "latency": -30, "throughput": 800, "reliability": 1.5, "monthlyCost": 80 },
+      "effects": {
+        "latency": -30,
+        "throughput": 800,
+        "reliability": 1.5,
+        "monthlyCost": 80
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "search-engine", "metric": "latency", "bonus": -15, "reason": "Native client libraries for batch query optimization" }
+        {
+          "with": "search-engine",
+          "metric": "latency",
+          "bonus": -15,
+          "reason": "Native client libraries for batch query optimization"
+        }
       ],
-      "tags": ["backend", "runtime", "synchronous"]
+      "tags": [
+        "backend",
+        "runtime",
+        "synchronous"
+      ]
     },
     {
       "id": "reverse-proxy",
       "name": "Reverse Proxy",
       "type": "infrastructure",
-      "icon": "🔀",
+      "icon": "/data/icons/system-design-patterns/reverse-proxy.png",
       "cost": 2,
       "description": "Sits in front of backend servers, handles SSL termination, static file serving, and connection pooling. Examples: Nginx, HAProxy, Caddy.",
       "bestFor": "Offloading SSL/TLS, serving static files at the edge, connection pooling for backend servers",
       "notGreatFor": "Dynamic traffic distribution across many instances — use a dedicated load balancer instead",
-      "effects": { "latency": -30, "throughput": 2000, "reliability": 1.0, "monthlyCost": 30 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "cdn", "metric": "latency", "bonus": -20, "reason": "Edge caching for static assets + origin caching layers" }
+      "effects": {
+        "latency": -30,
+        "throughput": 2000,
+        "reliability": 1,
+        "monthlyCost": 30
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["infrastructure", "proxy", "networking"]
+      "synergies": [
+        {
+          "with": "cdn",
+          "metric": "latency",
+          "bonus": -20,
+          "reason": "Edge caching for static assets + origin caching layers"
+        },
+        {
+          "with": "api-gateway",
+          "metric": "latency",
+          "bonus": 15,
+          "reason": "Both handle SSL termination, routing, and request transformation — stacking them adds an extra network hop with no benefit"
+        }
+      ],
+      "tags": [
+        "infrastructure",
+        "proxy",
+        "networking"
+      ]
     },
     {
       "id": "relational-db",
       "name": "Relational Database",
       "type": "database",
-      "icon": "🗄️",
+      "icon": "/data/icons/system-design-patterns/relational-db.png",
       "cost": 3,
       "description": "Row-oriented storage with ACID transactions, foreign keys, and a rich query language. Examples: PostgreSQL, MySQL, SQLite.",
       "bestFor": "Structured data with relationships, financial transactions, systems where data consistency is non-negotiable",
       "notGreatFor": "Rapidly evolving schemas or document-shaped data — migrations slow you down",
-      "effects": { "latency": -10, "throughput": 500, "reliability": 2.5, "monthlyCost": 200 },
+      "effects": {
+        "latency": -10,
+        "throughput": 500,
+        "reliability": 2.5,
+        "monthlyCost": 200
+      },
       "prerequisites": [],
       "synergies": [],
-      "tags": ["database", "relational", "sql"]
+      "tags": [
+        "database",
+        "relational",
+        "sql"
+      ]
     },
     {
       "id": "document-store",
       "name": "Document Store",
       "type": "database",
-      "icon": "📄",
+      "icon": "/data/icons/system-design-patterns/document-store.png",
       "cost": 2,
       "description": "Schema-flexible JSON/BSON document storage. No migrations required. Examples: MongoDB, DynamoDB, Firestore.",
       "bestFor": "Flexible or hierarchical data (user profiles, product catalogs), teams iterating quickly on data shape",
       "notGreatFor": "Complex relational queries or systems that need strong ACID guarantees across multiple entities",
-      "effects": { "latency": -5, "throughput": 1000, "reliability": 1.5, "monthlyCost": 150 },
+      "effects": {
+        "latency": -5,
+        "throughput": 1000,
+        "reliability": 1.5,
+        "monthlyCost": 150
+      },
       "prerequisites": [],
       "synergies": [],
-      "tags": ["database", "nosql", "document"]
+      "tags": [
+        "database",
+        "nosql",
+        "document"
+      ]
     },
     {
       "id": "in-memory-cache",
       "name": "In-memory Cache",
       "type": "cache",
-      "icon": "🔴",
+      "icon": "/data/icons/system-design-patterns/in-memory-cache.png",
       "cost": 3,
       "description": "Sub-millisecond key-value store in RAM. Also supports pub/sub, sorted sets, and Lua scripting. Examples: Redis, KeyDB.",
       "bestFor": "Session storage, hot query caching, rate limiting state, pub/sub messaging — anything needing microsecond reads",
       "notGreatFor": "Large datasets that exceed available RAM — use a distributed cache with consistent hashing instead",
-      "effects": { "latency": -80, "throughput": 3000, "reliability": 1.0, "monthlyCost": 150 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "relational-db", "metric": "latency", "bonus": -25, "reason": "Caching query results eliminates repeated DB round-trips" },
-        { "with": "event-driven-runtime", "metric": "throughput", "bonus": 1000, "reason": "Async pipelining multiplies cache throughput" }
+      "effects": {
+        "latency": -80,
+        "throughput": 3000,
+        "reliability": 1,
+        "monthlyCost": 150
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["cache", "nosql", "performance"]
+      "synergies": [
+        {
+          "with": "relational-db",
+          "metric": "latency",
+          "bonus": -25,
+          "reason": "Caching query results eliminates repeated DB round-trips"
+        },
+        {
+          "with": "event-driven-runtime",
+          "metric": "throughput",
+          "bonus": 1000,
+          "reason": "Async pipelining multiplies cache throughput"
+        }
+      ],
+      "tags": [
+        "cache",
+        "nosql",
+        "performance"
+      ]
     },
     {
       "id": "distributed-cache",
       "name": "Distributed Object Cache",
       "type": "cache",
-      "icon": "🧊",
+      "icon": "/data/icons/system-design-patterns/distributed-cache.png",
       "cost": 2,
       "description": "Horizontally sharded key-value cache designed for simple, high-throughput object caching across many nodes. Examples: Memcached.",
       "bestFor": "Simple object caching when you need to scale cache capacity linearly across many servers",
       "notGreatFor": "Rich data structures, persistence, or pub/sub — use an in-memory cache for those features",
-      "effects": { "latency": -60, "throughput": 2000, "reliability": 0.5, "monthlyCost": 80 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "in-memory-cache", "metric": "reliability", "bonus": -1.5, "reason": "Two competing cache layers cause invalidation storms and stale data" }
+      "effects": {
+        "latency": -60,
+        "throughput": 2000,
+        "reliability": 0.5,
+        "monthlyCost": 80
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["cache", "performance", "distributed"]
+      "synergies": [
+        {
+          "with": "in-memory-cache",
+          "metric": "reliability",
+          "bonus": -1.5,
+          "reason": "Two competing cache layers cause invalidation storms and stale data"
+        }
+      ],
+      "tags": [
+        "cache",
+        "performance",
+        "distributed"
+      ]
     },
     {
       "id": "containerization",
       "name": "Containerization",
       "type": "infrastructure",
-      "icon": "📦",
+      "icon": "/data/icons/system-design-patterns/containerization.png",
       "cost": 2,
       "description": "Package application and dependencies into a portable image. Guarantees identical behaviour across dev, staging, and prod. Examples: Docker, Podman.",
       "bestFor": "Reproducible deployments, eliminating environment drift, foundation for container orchestration",
       "notGreatFor": "Teams not ready for DevOps tooling overhead — start without it if the team is small",
-      "effects": { "latency": 0, "throughput": 500, "reliability": 2.0, "monthlyCost": 20 },
-      "prerequisites": ["backend"],
+      "effects": {
+        "latency": 0,
+        "throughput": 500,
+        "reliability": 2,
+        "monthlyCost": 20
+      },
+      "prerequisites": [
+        "backend"
+      ],
       "synergies": [],
-      "tags": ["infrastructure", "containers", "devops"]
+      "tags": [
+        "infrastructure",
+        "containers",
+        "devops"
+      ]
     },
     {
       "id": "container-orchestrator",
       "name": "Container Orchestrator",
       "type": "infrastructure",
-      "icon": "☸️",
+      "icon": "/data/icons/system-design-patterns/container-orchestrator.png",
       "cost": 4,
       "description": "Automates scheduling, scaling, self-healing, and rolling deployments of containerized workloads. Examples: Kubernetes, Nomad.",
       "bestFor": "Running many services at scale, automated failover, horizontal pod autoscaling, zero-downtime deploys",
       "notGreatFor": "Small teams or simple apps — the operational overhead is significant",
-      "effects": { "latency": -10, "throughput": 2000, "reliability": 2.5, "monthlyCost": 250 },
-      "prerequisites": ["containerization"],
-      "synergies": [
-        { "with": "containerization", "metric": "reliability", "bonus": 1.5, "reason": "Self-healing: failed containers restart automatically" },
-        { "with": "containerization", "metric": "throughput", "bonus": 2000, "reason": "Horizontal pod autoscaling under load" },
-        { "with": "thread-based-backend", "metric": "monthlyCost", "bonus": 120, "reason": "Over-provisioned thread pools waste orchestrator resources at scale" }
+      "effects": {
+        "latency": -10,
+        "throughput": 2000,
+        "reliability": 2.5,
+        "monthlyCost": 250
+      },
+      "prerequisites": [
+        "containerization"
       ],
-      "tags": ["infrastructure", "orchestration", "devops"]
+      "synergies": [
+        {
+          "with": "containerization",
+          "metric": "reliability",
+          "bonus": 1.5,
+          "reason": "Self-healing: failed containers restart automatically"
+        },
+        {
+          "with": "containerization",
+          "metric": "throughput",
+          "bonus": 2000,
+          "reason": "Horizontal pod autoscaling under load"
+        },
+        {
+          "with": "thread-based-backend",
+          "metric": "monthlyCost",
+          "bonus": 120,
+          "reason": "Over-provisioned thread pools waste orchestrator resources at scale"
+        }
+      ],
+      "tags": [
+        "infrastructure",
+        "orchestration",
+        "devops"
+      ]
     },
     {
       "id": "load-balancer",
       "name": "Load Balancer",
       "type": "infrastructure",
-      "icon": "⚖️",
+      "icon": "/data/icons/system-design-patterns/load-balancer.png",
       "cost": 2,
       "description": "Distributes incoming requests across a pool of backend instances using round-robin, least-connections, or weighted algorithms.",
       "bestFor": "Horizontal scaling, eliminating single points of failure, health-check-based traffic routing",
       "notGreatFor": "Stateful connections (WebSockets) without sticky sessions — use a message queue for async workloads instead",
-      "effects": { "latency": -15, "throughput": 3000, "reliability": 2.0, "monthlyCost": 100 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "reverse-proxy", "metric": "reliability", "bonus": 1.5, "reason": "Health-check probes + graceful connection draining" }
+      "effects": {
+        "latency": -15,
+        "throughput": 3000,
+        "reliability": 2,
+        "monthlyCost": 100
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["infrastructure", "networking", "scaling"]
+      "synergies": [
+        {
+          "with": "reverse-proxy",
+          "metric": "reliability",
+          "bonus": 1.5,
+          "reason": "Health-check probes + graceful connection draining"
+        }
+      ],
+      "tags": [
+        "infrastructure",
+        "networking",
+        "scaling"
+      ]
     },
     {
       "id": "cdn",
       "name": "Content Delivery Network",
       "type": "infrastructure",
-      "icon": "🌐",
+      "icon": "/data/icons/system-design-patterns/cdn.png",
       "cost": 2,
       "description": "Serves static assets (JS, CSS, images, fonts) from edge PoPs close to each user. Also caches API responses at the edge.",
       "bestFor": "Reducing latency for geographically distributed users, offloading static file serving from your origin",
       "notGreatFor": "Dynamic, personalised API responses that can't be cached — those still hit your origin",
-      "effects": { "latency": -100, "throughput": 4000, "reliability": 1.0, "monthlyCost": 120 },
+      "effects": {
+        "latency": -100,
+        "throughput": 4000,
+        "reliability": 1,
+        "monthlyCost": 120
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "object-storage", "metric": "latency", "bonus": -30, "reason": "Object storage as CDN origin with automatic edge caching" }
+        {
+          "with": "object-storage",
+          "metric": "latency",
+          "bonus": -30,
+          "reason": "Object storage as CDN origin with automatic edge caching"
+        }
       ],
-      "tags": ["infrastructure", "networking", "performance"]
+      "tags": [
+        "infrastructure",
+        "networking",
+        "performance"
+      ]
     },
     {
       "id": "observability-stack",
       "name": "Observability Stack",
       "type": "observability",
-      "icon": "📊",
+      "icon": "/data/icons/system-design-patterns/observability-stack.png",
       "cost": 2,
       "description": "Metrics, logs, and traces in one place. Dashboards show what changed, when, and why. Examples: Prometheus + Grafana, Datadog.",
       "bestFor": "Understanding system behaviour in production, setting SLO alerts, debugging incidents faster",
       "notGreatFor": "Pre-production — invest here once you have real traffic to observe",
-      "effects": { "latency": 0, "throughput": 0, "reliability": 2.5, "monthlyCost": 60 },
+      "effects": {
+        "latency": 0,
+        "throughput": 0,
+        "reliability": 2.5,
+        "monthlyCost": 60
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "container-orchestrator", "metric": "reliability", "bonus": 1.0, "reason": "Pod health metrics feed auto-recovery triggers" }
+        {
+          "with": "container-orchestrator",
+          "metric": "reliability",
+          "bonus": 1,
+          "reason": "Pod health metrics feed auto-recovery triggers"
+        }
       ],
-      "tags": ["observability", "devops", "reliability"]
+      "tags": [
+        "observability",
+        "devops",
+        "reliability"
+      ]
     },
     {
       "id": "rate-limiter",
       "name": "Rate Limiter",
       "type": "security",
-      "icon": "🚦",
+      "icon": "/data/icons/system-design-patterns/rate-limiter.png",
       "cost": 1,
       "description": "Throttles requests per client (IP, API key, user). Prevents abuse, protects backend capacity, and enforces fair usage.",
       "bestFor": "Public APIs, protecting expensive endpoints, preventing one bad actor from starving other users",
       "notGreatFor": "Internal-only services — the latency overhead is unnecessary inside a trusted network",
-      "effects": { "latency": 5, "throughput": -500, "reliability": 2.0, "monthlyCost": 10 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "api-gateway", "metric": "reliability", "bonus": 1.0, "reason": "Centralised rate limiting at the gateway layer" },
-        { "with": "message-queue", "metric": "throughput", "bonus": -800, "reason": "Rate limiter throttles requests before the queue can absorb bursts" }
+      "effects": {
+        "latency": 5,
+        "throughput": -500,
+        "reliability": 2,
+        "monthlyCost": 10
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["security", "protection", "api"]
+      "synergies": [
+        {
+          "with": "api-gateway",
+          "metric": "reliability",
+          "bonus": 1,
+          "reason": "Centralised rate limiting at the gateway layer"
+        },
+        {
+          "with": "message-queue",
+          "metric": "throughput",
+          "bonus": -800,
+          "reason": "Rate limiter throttles requests before the queue can absorb bursts"
+        }
+      ],
+      "tags": [
+        "security",
+        "protection",
+        "api"
+      ]
     },
     {
       "id": "message-queue",
       "name": "Message Queue",
       "type": "messaging",
-      "icon": "📨",
+      "icon": "/data/icons/system-design-patterns/message-queue.png",
       "cost": 3,
       "description": "Decouples producers from consumers via a persistent buffer. Workers pull jobs at their own pace. Examples: RabbitMQ, SQS, Kafka.",
       "bestFor": "Async workloads, absorbing traffic bursts, background jobs, guaranteeing at-least-once delivery",
       "notGreatFor": "Request-response flows where the client needs an immediate answer — adds latency",
-      "effects": { "latency": -30, "throughput": 2000, "reliability": 1.5, "monthlyCost": 120 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "in-memory-cache", "metric": "throughput", "bonus": 500, "reason": "Cache-backed job deduplication and acknowledgement" }
+      "effects": {
+        "latency": -30,
+        "throughput": 2000,
+        "reliability": 1.5,
+        "monthlyCost": 120
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["messaging", "async", "decoupling"]
+      "synergies": [
+        {
+          "with": "in-memory-cache",
+          "metric": "throughput",
+          "bonus": 500,
+          "reason": "Cache-backed job deduplication and acknowledgement"
+        }
+      ],
+      "tags": [
+        "messaging",
+        "async",
+        "decoupling"
+      ]
     },
     {
       "id": "object-storage",
       "name": "Object Storage",
       "type": "storage",
-      "icon": "🪣",
+      "icon": "/data/icons/system-design-patterns/object-storage.png",
       "cost": 1,
       "description": "Infinitely scalable blob/file storage accessible via HTTP. Pay per GB stored and per request. Examples: S3, GCS, Azure Blob.",
       "bestFor": "User uploads, static assets, database backups, audit logs — anything files or blobs",
       "notGreatFor": "Low-latency random reads on structured data — use a database for that",
-      "effects": { "latency": -10, "throughput": 500, "reliability": 1.0, "monthlyCost": 30 },
+      "effects": {
+        "latency": -10,
+        "throughput": 500,
+        "reliability": 1,
+        "monthlyCost": 30
+      },
       "prerequisites": [],
       "synergies": [],
-      "tags": ["storage", "cloud", "static"]
+      "tags": [
+        "storage",
+        "cloud",
+        "static"
+      ]
     },
     {
       "id": "search-engine",
       "name": "Search & Analytics Engine",
       "type": "search",
-      "icon": "🔍",
+      "icon": "/data/icons/system-design-patterns/search-engine.png",
       "cost": 3,
       "description": "Inverted-index store built for full-text search, faceted filtering, and real-time aggregations. Examples: Elasticsearch, OpenSearch.",
       "bestFor": "Full-text search, log analytics, autocomplete, faceted product search",
       "notGreatFor": "Primary transactional data store — it sacrifices ACID for search performance",
-      "effects": { "latency": -15, "throughput": 500, "reliability": 1.0, "monthlyCost": 180 },
-      "prerequisites": ["database"],
-      "synergies": [
-        { "with": "relational-db", "metric": "throughput", "bonus": 500, "reason": "Offloads search queries from the primary DB" }
+      "effects": {
+        "latency": -15,
+        "throughput": 500,
+        "reliability": 1,
+        "monthlyCost": 180
+      },
+      "prerequisites": [
+        "database"
       ],
-      "tags": ["search", "analytics", "nosql"]
+      "synergies": [
+        {
+          "with": "relational-db",
+          "metric": "throughput",
+          "bonus": 500,
+          "reason": "Offloads search queries from the primary DB"
+        }
+      ],
+      "tags": [
+        "search",
+        "analytics",
+        "nosql"
+      ]
     },
     {
       "id": "api-gateway",
       "name": "API Gateway",
       "type": "infrastructure",
-      "icon": "🚪",
+      "icon": "/data/icons/system-design-patterns/api-gateway.png",
       "cost": 2,
       "description": "Single entry point that handles routing, auth verification, request transformation, and throttling for all services.",
       "bestFor": "Microservices architectures, centralising cross-cutting concerns (auth, logging, CORS) away from individual services",
       "notGreatFor": "Monoliths or simple single-service apps — adds latency with no benefit",
-      "effects": { "latency": 10, "throughput": 1000, "reliability": 1.5, "monthlyCost": 50 },
-      "prerequisites": ["backend"],
-      "synergies": [
-        { "with": "load-balancer", "metric": "throughput", "bonus": 1000, "reason": "Gateway routing + load balancer distribution" }
+      "effects": {
+        "latency": 10,
+        "throughput": 1000,
+        "reliability": 1.5,
+        "monthlyCost": 50
+      },
+      "prerequisites": [
+        "backend"
       ],
-      "tags": ["infrastructure", "api", "routing"]
+      "synergies": [
+        {
+          "with": "load-balancer",
+          "metric": "throughput",
+          "bonus": 1000,
+          "reason": "Gateway routing + load balancer distribution"
+        },
+        {
+          "with": "reverse-proxy",
+          "metric": "latency",
+          "bonus": 15,
+          "reason": "Both handle SSL termination, routing, and request transformation — stacking them adds an extra network hop with no benefit"
+        }
+      ],
+      "tags": [
+        "infrastructure",
+        "api",
+        "routing"
+      ]
     },
     {
       "id": "web-app-firewall",
       "name": "Web Application Firewall",
       "type": "security",
-      "icon": "🛡️",
+      "icon": "/data/icons/system-design-patterns/web-app-firewall.png",
       "cost": 1,
       "description": "Layer-7 traffic inspection that blocks SQLi, XSS, and volumetric attack traffic before it reaches your origin.",
       "bestFor": "Public-facing APIs, regulatory compliance (PCI-DSS, HIPAA), protecting against OWASP Top 10",
       "notGreatFor": "Internal services — the cost and latency aren't worth it for traffic that never touches the internet",
-      "effects": { "latency": 5, "throughput": -200, "reliability": 2.0, "monthlyCost": 40 },
+      "effects": {
+        "latency": 5,
+        "throughput": -200,
+        "reliability": 2,
+        "monthlyCost": 40
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "rate-limiter", "metric": "reliability", "bonus": 1.0, "reason": "Layered defence: WAF blocks known attacks, rate limiter handles unknown abuse" }
+        {
+          "with": "rate-limiter",
+          "metric": "reliability",
+          "bonus": 1,
+          "reason": "Layered defence: WAF blocks known attacks, rate limiter handles unknown abuse"
+        }
       ],
-      "tags": ["security", "protection", "networking"]
+      "tags": [
+        "security",
+        "protection",
+        "networking"
+      ]
     },
     {
       "id": "auto-scaler",
       "name": "Auto Scaler",
       "type": "infrastructure",
-      "icon": "📈",
+      "icon": "/data/icons/system-design-patterns/auto-scaler.png",
       "cost": 3,
       "description": "Watches CPU, memory, or custom metrics and adds/removes compute instances automatically to match demand.",
       "bestFor": "Bursty traffic with predictable patterns, cost efficiency at scale — pay only for what you need",
       "notGreatFor": "Apps with slow startup times — instances take too long to come online during sudden spikes",
-      "effects": { "latency": 0, "throughput": 3000, "reliability": 1.5, "monthlyCost": 150 },
-      "prerequisites": ["containerization"],
-      "synergies": [
-        { "with": "container-orchestrator", "metric": "throughput", "bonus": 3000, "reason": "HPA + cluster autoscaler act at both pod and node level" },
-        { "with": "load-balancer", "metric": "throughput", "bonus": 2000, "reason": "Load balancer automatically routes to newly scaled instances" }
+      "effects": {
+        "latency": 0,
+        "throughput": 3000,
+        "reliability": 1.5,
+        "monthlyCost": 150
+      },
+      "prerequisites": [
+        "containerization"
       ],
-      "tags": ["infrastructure", "scaling", "cloud"]
+      "synergies": [
+        {
+          "with": "container-orchestrator",
+          "metric": "throughput",
+          "bonus": 3000,
+          "reason": "HPA + cluster autoscaler act at both pod and node level"
+        },
+        {
+          "with": "load-balancer",
+          "metric": "throughput",
+          "bonus": 2000,
+          "reason": "Load balancer automatically routes to newly scaled instances"
+        }
+      ],
+      "tags": [
+        "infrastructure",
+        "scaling",
+        "cloud"
+      ]
     },
     {
       "id": "cicd-pipeline",
       "name": "CI/CD Pipeline",
       "type": "devops",
-      "icon": "🔄",
+      "icon": "/data/icons/system-design-patterns/cicd-pipeline.png",
       "cost": 2,
       "description": "Automated build → test → deploy pipeline triggered on every commit. Catches regressions before they reach production.",
       "bestFor": "Any team deploying more than once a week — automation eliminates human error and speeds up feedback loops",
       "notGreatFor": "Pre-MVP stage where deployment is rare and the cost of setup exceeds the benefit",
-      "effects": { "latency": 0, "throughput": 0, "reliability": 2.0, "monthlyCost": 40 },
+      "effects": {
+        "latency": 0,
+        "throughput": 0,
+        "reliability": 2,
+        "monthlyCost": 40
+      },
       "prerequisites": [],
       "synergies": [
-        { "with": "containerization", "metric": "reliability", "bonus": 1.0, "reason": "Reproducible container builds mean consistent deployments" },
-        { "with": "observability-stack", "metric": "reliability", "bonus": 1.0, "reason": "Deploy health checks + automatic rollback on error spike" }
+        {
+          "with": "containerization",
+          "metric": "reliability",
+          "bonus": 1,
+          "reason": "Reproducible container builds mean consistent deployments"
+        },
+        {
+          "with": "observability-stack",
+          "metric": "reliability",
+          "bonus": 1,
+          "reason": "Deploy health checks + automatic rollback on error spike"
+        }
       ],
-      "tags": ["devops", "automation", "reliability"]
+      "tags": [
+        "devops",
+        "automation",
+        "reliability"
+      ]
     }
   ]
 }

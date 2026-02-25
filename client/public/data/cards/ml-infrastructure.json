@@ -15,7 +15,8 @@
       "effects": { "trainingCost": -60, "modelFreshness": 30, "reliability": 2.0, "infraCost": 80 },
       "prerequisites": [],
       "synergies": [
-        { "with": "feature-store", "metric": "modelFreshness", "bonus": 15, "reason": "Pre-computed features reduce training time and improve freshness" }
+        { "with": "feature-store", "metric": "modelFreshness", "bonus": 15, "reason": "Pre-computed features reduce training time and improve freshness" },
+        { "with": "gpu-cluster", "metric": "infraCost", "bonus": 150, "reason": "Classical ML batch pipelines (tree models, linear models) run on CPU — GPUs sit idle, burning expensive compute for no speedup" }
       ],
       "tags": ["training", "batch", "pipeline"]
     },
@@ -31,7 +32,8 @@
       "effects": { "trainingCost": -20, "modelFreshness": 90, "reliability": 1.0, "infraCost": 250 },
       "prerequisites": [],
       "synergies": [
-        { "with": "stream-processor", "metric": "modelFreshness", "bonus": 20, "reason": "Stream processor feeds training events with minimal lag" }
+        { "with": "stream-processor", "metric": "modelFreshness", "bonus": 20, "reason": "Stream processor feeds training events with minimal lag" },
+        { "with": "automl", "metric": "infraCost", "bonus": 100, "reason": "HPO trials need stable data to converge — on a streaming pipeline, the data distribution shifts between trials, wasting compute on searches that never settle" }
       ],
       "tags": ["training", "streaming", "online-learning"]
     },
@@ -172,7 +174,8 @@
       "effects": { "trainingCost": -120, "modelFreshness": 50, "reliability": 1.0, "infraCost": 400 },
       "prerequisites": ["training"],
       "synergies": [
-        { "with": "streaming-training", "metric": "modelFreshness", "bonus": 25, "reason": "GPU-accelerated online learning trains faster on incoming data" }
+        { "with": "streaming-training", "metric": "modelFreshness", "bonus": 25, "reason": "GPU-accelerated online learning trains faster on incoming data" },
+        { "with": "batch-training", "metric": "infraCost", "bonus": 150, "reason": "Classical ML batch pipelines (tree models, linear models) run on CPU — GPUs sit idle, burning expensive compute for no speedup" }
       ],
       "tags": ["compute", "gpu", "deep-learning"]
     },
@@ -188,7 +191,8 @@
       "effects": { "trainingCost": -50, "modelFreshness": 20, "reliability": 1.5, "infraCost": 120 },
       "prerequisites": ["training"],
       "synergies": [
-        { "with": "experiment-tracker", "metric": "reliability", "bonus": 1.5, "reason": "Every HPO trial is tracked, making it easy to compare and reproduce the best run" }
+        { "with": "experiment-tracker", "metric": "reliability", "bonus": 1.5, "reason": "Every HPO trial is tracked, making it easy to compare and reproduce the best run" },
+        { "with": "streaming-training", "metric": "infraCost", "bonus": 100, "reason": "HPO trials need stable data to converge — on a streaming pipeline, the data distribution shifts between trials, wasting compute on searches that never settle" }
       ],
       "tags": ["training", "automation", "optimisation"]
     }

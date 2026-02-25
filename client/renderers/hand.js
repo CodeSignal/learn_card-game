@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, isAntiSynergy } from './shared.js';
+import { TYPE_COLORS, isAntiSynergy, renderIcon } from './shared.js';
 import { showTooltip, hideTooltip, moveTooltip } from './tooltip.js';
 import { showCardDetail } from './card-detail.js';
 
@@ -40,7 +40,7 @@ function createHandCard(card, canPlay) {
   el.innerHTML = `
     <div class="card-cost-badge ${costClass}">⬡ ${card.cost}</div>
     <button class="card-info-btn" title="View details">i</button>
-    <span class="card-icon">${card.icon}</span>
+    <span class="card-icon">${renderIcon(card.icon)}</span>
     <span class="card-name">${card.name}</span>
     <div class="card-type-strip ${card.type}"></div>
   `;

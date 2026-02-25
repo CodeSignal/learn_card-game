@@ -22,12 +22,7 @@ export async function generateContent(description, opts = {}) {
   const res = await fetch('/api/generate-content', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      prompt,
-      apiKey: opts.apiKey || '',
-      model: opts.model || 'gpt-4o',
-      baseUrl: opts.baseUrl || 'https://api.openai.com/v1',
-    }),
+    body: JSON.stringify({ prompt }),
   });
 
   if (!res.ok) {
@@ -48,6 +43,36 @@ export function parseGeneratedContent(text) {
   let match;
   while ((match = regex.exec(text)) !== null) {
     blocks[match[1].toLowerCase()] = match[2].trim();
+  }
+
+  // If LLM used labeled blocks, use them directly
+  if (!blocks.deck || !blocks.scenarios || !blocks.campaign) {
+    // Fallback: collect all `json` blocks and infer by shape
+    const jsonBlocks = [];
+    const jsonRegex = /```json\s*\n([\s\S]*?)```/g;
+    let m;
+    while ((m = jsonRegex.exec(text)) !== null) {
+      jsonBlocks.push(m[1].trim());
+    }
+
+    for (const raw of jsonBlocks) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed[0]?.goals && !blocks.scenarios) {
+          blocks.scenarios = raw;
+        } else if (parsed.cards && !blocks.deck) {
+          blocks.deck = raw;
+        } else if (parsed.deckId && !blocks.deck) {
+          blocks.deck = raw;
+        } else if (parsed.encounters && !blocks.campaign) {
+          blocks.campaign = raw;
+        } else if (Array.isArray(parsed) && !blocks.scenarios) {
+          blocks.scenarios = raw;
+        } else if (!blocks.campaign) {
+          blocks.campaign = raw;
+        }
+      } catch { /* skip unparseable */ }
+    }
   }
 
   const result = { deck: null, scenarios: null, campaign: null, errors: [] };

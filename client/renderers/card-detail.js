@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, formatEffect, METRIC_LABELS, isAntiSynergy } from './shared.js';
+import { TYPE_COLORS, formatEffect, METRIC_LABELS, isAntiSynergy, renderIcon } from './shared.js';
 import { hideTooltip } from './tooltip.js';
 
 let detailPanel = null;
@@ -54,7 +54,7 @@ export function showCardDetail(card) {
 
       return `<div class="cd-synergy-row ${statusClass}${antiClass}">
         <span class="cd-synergy-icon">${icon}</span>
-        <span class="cd-synergy-partner">${partner?.icon || '?'} ${partner?.name || s.with}</span>
+        <span class="cd-synergy-partner">${renderIcon(partner?.icon) || '?'} ${partner?.name || s.with}</span>
         <span class="cd-synergy-bonus">${bonusText}</span>
         <span class="cd-synergy-reason">${s.reason}</span>
       </div>`;
@@ -89,7 +89,7 @@ export function showCardDetail(card) {
       <button class="cd-close" title="Close">✕</button>
       <div class="cd-header">
         <div class="cd-icon-area">
-          <span class="cd-icon">${card.icon}</span>
+          <span class="cd-icon">${renderIcon(card.icon)}</span>
           <div class="cd-type-badge" style="background:${typeColor}">${card.type}</div>
         </div>
         <div class="cd-title-area">
