@@ -1,5 +1,6 @@
 import { uiState } from '../modules/state.js';
 import { METRIC_LABELS, formatEffect, renderIcon, isAntiSynergy } from './shared.js';
+import { fetchDebrief } from '../modules/debrief.js';
 import { renderHeaderMetrics, renderLastAttempt, renderCampaignProgress } from './header.js';
 import { renderHandCards } from './hand.js';
 import { hideTooltip } from './tooltip.js';
@@ -23,7 +24,7 @@ export function startBattle({ onVictory, onShowWinningPath, onCampaignOver, onRe
   const goals = uiState.engine.checkGoals();
   uiState.engine.recordAttempt(goals);
 
-  const debriefPromise = fetchDebrief(goals);
+  const debriefPromise = fetchDebrief(uiState.engine, uiState.scenarioData, goals);
   runBattleAnimation(goals, debriefPromise, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed);
 }
 
@@ -250,164 +251,6 @@ function animateCounter(el, from, to, durationMs, fmt) {
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function fetchDebrief(goals) {
-  const allMet = goals.every(g => g.met);
-  const boardCardIds = uiState.engine.getBoardCardIds();
-  const boardCardObjs = boardCardIds.map(id => uiState.engine.getCard(id)).filter(Boolean);
-  const boardCards = boardCardObjs.map(c => `${c.name} (${c.type})`);
-  const boardIdSet = new Set(boardCardIds);
-
-  const activeSynergies = uiState.engine.getActiveSynergies();
-
-  const formatSyn = (s) => {
-    const src = uiState.engine.getCard(s.sourceCard);
-    const tgt = uiState.engine.getCard(s.targetCard);
-    const sign = s.bonus > 0 ? '+' : '';
-    return `${src?.name} + ${tgt?.name} → ${s.metric} ${sign}${s.bonus}${s.reason ? ` (${s.reason})` : ''}`;
-  };
-
-  const positiveSynergies = activeSynergies
-    .filter(s => !isAntiSynergy(s.bonus, s.metric))
-    .map(formatSyn);
-  const antiSynergies = activeSynergies
-    .filter(s => isAntiSynergy(s.bonus, s.metric))
-    .map(formatSyn);
-
-  const handCardObjs = (uiState.engine.handCardIds || [])
-    .filter(id => !boardIdSet.has(id))
-    .map(id => uiState.engine.getCard(id))
-    .filter(Boolean);
-
-  // Find synergies and anti-synergies unplayed cards would trigger with board cards
-  const missedSynergies = [];
-  const wouldConflict = [];
-  for (const handCard of handCardObjs) {
-    for (const syn of (handCard.synergies || [])) {
-      if (!boardIdSet.has(syn.with)) continue;
-      const partner = uiState.engine.getCard(syn.with);
-      const sign = syn.bonus > 0 ? '+' : '';
-      const entry = `${handCard.name} + ${partner?.name} → ${syn.metric} ${sign}${syn.bonus}`;
-      if (isAntiSynergy(syn.bonus, syn.metric)) {
-        wouldConflict.push(entry);
-      } else {
-        missedSynergies.push(entry);
-      }
-    }
-    // Also check board cards' synergies pointing at this hand card
-    for (const bcId of boardCardIds) {
-      const bc = uiState.engine.getCard(bcId);
-      if (!bc) continue;
-      for (const syn of (bc.synergies || [])) {
-        if (syn.with !== handCard.id) continue;
-        const sign = syn.bonus > 0 ? '+' : '';
-        const entry = `${handCard.name} + ${bc.name} → ${syn.metric} ${sign}${syn.bonus}`;
-        if (isAntiSynergy(syn.bonus, syn.metric)) {
-          wouldConflict.push(entry);
-        } else {
-          missedSynergies.push(entry);
-        }
-      }
-    }
-  }
-
-  const scenarioName = uiState.scenarioData?.name || 'Unknown';
-  const goalSummary = goals.map(g => {
-    const metricDef = uiState.scenarioData?.baseMetrics?.[g.metric];
-    const label = metricDef?.label || g.metric;
-    const fmt = METRIC_LABELS[g.metric];
-    const current = fmt ? fmt.short(g.currentValue) : String(Math.round(g.currentValue));
-    const target = fmt ? fmt.short(g.value) : String(Math.round(g.value));
-    return `${label}: ${current} (goal: ${g.operator} ${target}) — ${g.met ? 'PASSED' : 'FAILED'}`;
-  }).join('; ');
-
-  const failedGoals = goals.filter(g => !g.met);
-  const resultWord = allMet ? 'PASSED all tests' : `FAILED ${failedGoals.length} test(s)`;
-
-  const resourcesUsed = uiState.engine.getResourcesUsed();
-  const totalResources = uiState.engine.getTotalResources();
-
-  const budgetPct = Math.round((resourcesUsed / totalResources) * 100);
-  const budgetNote = allMet
-    ? (budgetPct < 70 ? 'efficiently under budget' : 'near full budget')
-    : (budgetPct < 70 ? 'under-invested — unspent budget could add more components' : 'near full budget');
-  let contextLines = `\nBudget: ${resourcesUsed}/${totalResources} resources used (${budgetNote}).`;
-  if (positiveSynergies.length > 0) {
-    contextLines += `\nSynergies active (helping): ${positiveSynergies.join('; ')}.`;
-  }
-  if (antiSynergies.length > 0) {
-    contextLines += `\nAnti-synergies active (hurting): ${antiSynergies.join('; ')}.`;
-  }
-  if (handCardObjs.length > 0) {
-    contextLines += `\nCards in hand but not played: ${handCardObjs.map(c => c.name).join(', ')}.`;
-  }
-  if (missedSynergies.length > 0) {
-    contextLines += `\nMissed synergies (unplayed card + board card): ${missedSynergies.join('; ')}.`;
-  }
-  if (wouldConflict.length > 0) {
-    contextLines += `\nWARNING — unplayed cards that would CONFLICT with board: ${wouldConflict.join('; ')}. Do NOT recommend these.`;
-  }
-
-  const { feasible, bestCombo } = uiState.engine.checkFeasibility();
-  const bestComboSet = new Set(bestCombo || []);
-  const boardOverlap = boardCardIds.filter(id => bestComboSet.has(id)).length;
-  const swapsNeeded = bestCombo?.length ? Math.max(bestComboSet.size - boardOverlap, boardCardIds.length - boardOverlap) : 0;
-  const needsTotalRethink = feasible && swapsNeeded > 2;
-
-  if (!allMet && feasible === false) {
-    contextLines += `\nCRITICAL: No combination of cards in hand can pass all goals — this is a draft dead end.`;
-  } else if (needsTotalRethink) {
-    contextLines += `\nA winning combo exists but shares only ${boardOverlap}/${boardCardIds.length} cards with the current board — most of the architecture needs rebuilding.`;
-  }
-
-  let directive;
-  if (allMet) {
-    if (antiSynergies.length > 0) {
-      directive = 'Passed despite anti-synergies. Explain the architectural trade-off that made it work.';
-    } else if (positiveSynergies.length > 0) {
-      directive = 'Explain why the synergy combo works architecturally.';
-    } else {
-      directive = 'Explain the architectural insight behind the strongest decision.';
-    }
-  } else if (feasible === false) {
-    directive = 'No card combination from the hand can win. The draft choices created a dead end. Hint at what kind of cards should have been drafted.';
-  } else if (needsTotalRethink) {
-    directive = 'The board needs a fundamentally different combination — most cards need swapping. Suggest a different architectural direction.';
-  } else {
-    if (antiSynergies.length > 0) {
-      directive = 'Explain the architectural conflict between the anti-synergy cards.';
-    } else if (missedSynergies.length > 0) {
-      directive = 'Hint at an unused card in hand that pairs well with something on the board.';
-    } else {
-      directive = 'Explain the architectural gap — what kind of component is missing.';
-    }
-  }
-
-  const prompt = `You are a senior architect giving a quick post-deployment verdict.
-Scenario: "${scenarioName}". Result: ${resultWord}.
-Architecture deployed: ${boardCards.join(', ')}.${contextLines}
-Metrics: ${goalSummary}.
-RULES:
-- Do NOT restate metric names or numbers — the player already sees those.
-- Do NOT name specific cards. Describe the architectural concept or pattern type instead (e.g. "caching layer" not "In-memory Cache", "async decoupling" not "Message Queue").
-- Focus on architectural REASONING: why patterns conflict, complement, or what kind of component is missing.
-- MAX 10 words. No filler. No quotes. No labels like "Verdict:". Start directly with the insight.
-${directive}`;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  return fetch('/api/generate-content', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, max_tokens: 30 }),
-    signal: controller.signal,
-  })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => data?.content?.trim() || null)
-    .catch(() => null)
-    .finally(() => clearTimeout(timeout));
-}
 
 /**
  * Build coaching hints for the loss screen.
