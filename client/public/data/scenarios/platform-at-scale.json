@@ -1,0 +1,24 @@
+{
+  "id": "platform-at-scale",
+  "name": "Platform at Scale",
+  "briefing": "You now run 8 models in production. The fraud model needs to retrain every hour as attack patterns change. The recommendation model trains on 2TB of interaction data — current CPU training takes too long. The churn model's predictions degraded last month: data drift went undetected for 3 weeks.",
+  "deckId": "ml-infrastructure",
+  "totalResources": 16,
+  "baseMetrics": {
+    "trainingCost": { "base": 250,  "unit": "min",  "label": "Training Time",   "lowerIsBetter": true },
+    "modelFreshness": { "base": 30, "unit": "%",    "label": "Model Freshness", "lowerIsBetter": false, "cap": 100 },
+    "reliability":  { "base": 92.0, "unit": "%",    "label": "System Uptime",   "lowerIsBetter": false, "cap": 99.99 },
+    "infraCost":    { "base": 0,    "unit": "$/mo", "label": "Infra Cost",      "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "trainingCost",   "operator": "<=", "value": 120,  "label": "Train in under 120 minutes" },
+    { "metric": "modelFreshness", "operator": ">=", "value": 70,   "label": "Model freshness ≥ 70%" },
+    { "metric": "reliability",    "operator": ">=", "value": 97.0, "label": "97%+ system uptime" },
+    { "metric": "infraCost",      "operator": "<=", "value": 1000, "label": "Under $1,000/month" }
+  ],
+  "availableCards": [
+    "batch-training", "streaming-training", "data-warehouse",
+    "online-inference", "batch-inference", "feature-store", "experiment-tracker",
+    "model-registry", "stream-processor", "automl", "gpu-cluster"
+  ]
+}

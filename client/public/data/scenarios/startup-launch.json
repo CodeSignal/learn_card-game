@@ -1,0 +1,20 @@
+{
+  "id": "startup-launch",
+  "name": "Startup Launch",
+  "briefing": "Your task management app just shipped its MVP. It stores to-do items, user accounts, and relationships between tasks — structured, relational data where losing a record is unacceptable. Traffic is modest but you need a reliable foundation. Choose your database wisely: your app requires ACID transactions and referential integrity.",
+  "deckId": "system-design-patterns",
+  "totalResources": 5,
+  "baseMetrics": {
+    "latency":     { "base": 120,  "unit": "ms",   "label": "Response Time",  "lowerIsBetter": true },
+    "throughput":  { "base": 500,  "unit": "req/s", "label": "Throughput",     "lowerIsBetter": false },
+    "reliability": { "base": 94.0, "unit": "%",     "label": "Uptime",         "lowerIsBetter": false, "cap": 99.99 },
+    "monthlyCost": { "base": 0,    "unit": "$/mo",  "label": "Monthly Cost",   "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "latency",      "operator": "<=", "value": 80,   "label": "Response time under 80ms" },
+    { "metric": "throughput",   "operator": ">=", "value": 2000, "label": "Handle 2K+ requests/sec" },
+    { "metric": "reliability",  "operator": ">=", "value": 97.0, "label": "97.0%+ uptime" },
+    { "metric": "monthlyCost",  "operator": "<=", "value": 350,  "label": "Under $350/month" }
+  ],
+  "availableCards": ["event-driven-runtime", "relational-db", "document-store"]
+}

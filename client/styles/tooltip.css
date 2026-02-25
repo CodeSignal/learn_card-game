@@ -1,0 +1,74 @@
+/* ===== TOOLTIP (hover details) ===== */
+
+body:has(.encounter-transition, .draft-overlay, .battle-overlay) > .card-tooltip {
+  display: none;
+}
+
+.card-tooltip {
+  position: fixed;
+  z-index: 999;
+  background: var(--Colors-Backgrounds-Main-Top);
+  border: 1px solid var(--Colors-Stroke-Default);
+  border-radius: var(--UI-Radius-radius-m, 8px);
+  padding: var(--UI-Spacing-spacing-s);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  max-width: 280px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.card-tooltip .tooltip-title {
+  font: var(--Fonts-Body-Bold-md);
+  color: var(--Colors-Text-Body-Strong);
+  margin-bottom: 4px;
+}
+
+.card-tooltip .tooltip-desc {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Default);
+  margin-bottom: 6px;
+}
+
+.card-tooltip .tooltip-effects {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.card-tooltip .tooltip-effect {
+  font: var(--Fonts-Body-Default-sm);
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-tooltip .tooltip-synergies {
+  border-top: 1px solid var(--Colors-Stroke-Default);
+  padding-top: 4px;
+  margin-top: 4px;
+}
+
+.card-tooltip .tooltip-synergy {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Base-Accent-Yellow-700);
+}
+
+.card-tooltip .tooltip-synergy.anti {
+  color: var(--Colors-Alert-Error-Default);
+}
+
+.card-tooltip .tooltip-prereq {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Alert-Error-Default);
+  margin-top: 4px;
+}
+
+.card-tooltip .tooltip-inactive-warning {
+  font: var(--Fonts-Body-Bold-sm);
+  color: var(--Colors-Alert-Warning-Default);
+  background: var(--Colors-Alert-Warning-Lighter);
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}

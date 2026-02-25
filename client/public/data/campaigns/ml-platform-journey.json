@@ -1,0 +1,34 @@
+{
+  "id": "ml-platform-journey",
+  "name": "From Notebook to Platform",
+  "description": "Build a production ML platform layer by layer — from your first model in training to a monitored, reliable serving system.",
+  "deckId": "ml-infrastructure",
+  "maxRetries": 3,
+  "encounters": [
+    {
+      "scenarioId": "first-model",
+      "startingHand": ["batch-training", "streaming-training", "data-warehouse"],
+      "draftPool": ["online-inference", "batch-inference", "feature-store", "experiment-tracker"],
+      "draftPicks": 2,
+      "draftHint": "Your model is trained. Now you need to serve predictions and make experiments reproducible. What will you add?"
+    },
+    {
+      "scenarioId": "model-in-production",
+      "draftPool": ["gpu-cluster", "automl", "model-registry", "stream-processor"],
+      "draftPicks": 2,
+      "draftHint": "Training takes too long and your models need versioning. What will speed things up and keep deployments safe?"
+    },
+    {
+      "scenarioId": "platform-at-scale",
+      "draftPool": ["model-monitor", "stream-processor", "automl", "gpu-cluster"],
+      "draftPicks": 2,
+      "draftHint": "Your platform handles multiple models. What will catch data drift before it becomes a business problem?"
+    },
+    {
+      "scenarioId": "ml-platform-complete",
+      "draftPool": [],
+      "draftPicks": 0,
+      "draftHint": ""
+    }
+  ]
+}

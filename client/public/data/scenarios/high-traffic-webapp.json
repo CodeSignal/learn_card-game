@@ -1,0 +1,25 @@
+{
+  "id": "high-traffic-webapp",
+  "name": "High-Traffic Web App",
+  "briefing": "Your startup just got featured on Hacker News. Traffic is about to spike 100x. You have a limited budget and engineering resources — pick the right technologies to build an architecture that can handle the storm without breaking the bank.",
+  "deckId": "system-architecture",
+  "totalResources": 14,
+  "baseMetrics": {
+    "latency": { "base": 500, "unit": "ms", "label": "Response Time", "lowerIsBetter": true },
+    "throughput": { "base": 100, "unit": "req/s", "label": "Throughput", "lowerIsBetter": false },
+    "reliability": { "base": 90.0, "unit": "%", "label": "Uptime", "lowerIsBetter": false, "cap": 99.99 },
+    "monthlyCost": { "base": 0, "unit": "$/mo", "label": "Monthly Cost", "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "latency", "operator": "<=", "value": 200, "label": "Response time under 200ms" },
+    { "metric": "throughput", "operator": ">=", "value": 10000, "label": "Handle 10K+ requests/sec" },
+    { "metric": "reliability", "operator": ">=", "value": 99.0, "label": "99%+ uptime" },
+    { "metric": "monthlyCost", "operator": "<=", "value": 1000, "label": "Under $1,000/month" }
+  ],
+  "availableCards": [
+    "nodejs", "python-flask", "nginx", "postgresql", "mongodb",
+    "redis", "memcached", "docker", "kubernetes", "load-balancer",
+    "cdn", "monitoring", "rate-limiter", "message-queue", "s3-storage",
+    "elasticsearch", "api-gateway", "firewall", "auto-scaler", "ci-cd"
+  ]
+}

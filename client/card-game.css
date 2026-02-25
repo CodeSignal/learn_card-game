@@ -1,0 +1,11 @@
+@import url('./styles/animations.css');
+@import url('./styles/layout.css');
+@import url('./styles/board.css');
+@import url('./styles/hand.css');
+@import url('./styles/tooltip.css');
+@import url('./styles/battle.css');
+@import url('./styles/draft.css');
+@import url('./styles/overlays.css');
+@import url('./styles/notifications.css');
+@import url('./styles/card-detail.css');
+@import url('./styles/authoring.css');

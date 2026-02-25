@@ -1,0 +1,20 @@
+{
+  "id": "first-model",
+  "name": "First Model",
+  "briefing": "Your data science team has a trained churn prediction model ready. It takes 4 hours to retrain. The business wants predictions daily. You must decide: batch training on a schedule, or real-time continuous training? Your data is tabular (customer events), stable, and refreshed once per day.",
+  "deckId": "ml-infrastructure",
+  "totalResources": 8,
+  "baseMetrics": {
+    "trainingCost": { "base": 200,  "unit": "min",  "label": "Training Time",   "lowerIsBetter": true },
+    "modelFreshness": { "base": 10, "unit": "%",    "label": "Model Freshness", "lowerIsBetter": false, "cap": 100 },
+    "reliability":  { "base": 90.0, "unit": "%",    "label": "System Uptime",   "lowerIsBetter": false, "cap": 99.99 },
+    "infraCost":    { "base": 0,    "unit": "$/mo", "label": "Infra Cost",      "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "trainingCost",   "operator": "<=", "value": 150,  "label": "Train in under 150 minutes" },
+    { "metric": "modelFreshness", "operator": ">=", "value": 40,   "label": "Model freshness ≥ 40%" },
+    { "metric": "reliability",    "operator": ">=", "value": 93.0, "label": "93%+ system uptime" },
+    { "metric": "infraCost",      "operator": "<=", "value": 400,  "label": "Under $400/month" }
+  ],
+  "availableCards": ["batch-training", "streaming-training", "data-warehouse"]
+}

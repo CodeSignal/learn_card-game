@@ -1,0 +1,24 @@
+{
+  "id": "going-viral",
+  "name": "Going Viral",
+  "briefing": "A popular tech newsletter featured your app — signups tripled overnight. Users are reporting sluggish load times. Profiling reveals the same database queries firing thousands of times per second: session lookups, recent task lists, user preferences. Every request hits the database. You need to reduce that read pressure.",
+  "deckId": "system-design-patterns",
+  "totalResources": 8,
+  "baseMetrics": {
+    "latency":     { "base": 300,  "unit": "ms",   "label": "Response Time",  "lowerIsBetter": true },
+    "throughput":  { "base": 1500, "unit": "req/s", "label": "Throughput",     "lowerIsBetter": false },
+    "reliability": { "base": 95.0, "unit": "%",     "label": "Uptime",         "lowerIsBetter": false, "cap": 99.99 },
+    "monthlyCost": { "base": 0,    "unit": "$/mo",  "label": "Monthly Cost",   "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "latency",      "operator": "<=", "value": 180,  "label": "Response time under 180ms" },
+    { "metric": "throughput",   "operator": ">=", "value": 5500, "label": "Handle 5.5K+ requests/sec" },
+    { "metric": "reliability",  "operator": ">=", "value": 97.5, "label": "97.5%+ uptime" },
+    { "metric": "monthlyCost",  "operator": "<=", "value": 700,  "label": "Under $700/month" }
+  ],
+  "availableCards": [
+    "event-driven-runtime", "thread-based-backend",
+    "relational-db", "document-store",
+    "in-memory-cache", "distributed-cache", "cdn", "reverse-proxy"
+  ]
+}

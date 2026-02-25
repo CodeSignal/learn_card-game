@@ -1,0 +1,34 @@
+{
+  "id": "system-design-journey",
+  "name": "From Zero to Scale",
+  "description": "Build a production-grade system from scratch, one architectural layer at a time.",
+  "deckId": "system-design-patterns",
+  "maxRetries": 3,
+  "encounters": [
+    {
+      "scenarioId": "startup-launch",
+      "startingHand": ["event-driven-runtime", "relational-db", "document-store"],
+      "draftPool": ["in-memory-cache", "distributed-cache", "cdn", "reverse-proxy"],
+      "draftPicks": 2,
+      "draftHint": "Traffic is growing. Users are hitting your database on every request. What will you add to handle the load?"
+    },
+    {
+      "scenarioId": "going-viral",
+      "draftPool": ["load-balancer", "containerization", "message-queue", "search-engine"],
+      "draftPicks": 2,
+      "draftHint": "Your user base is growing fast. A single server won't cut it. What do you need to scale horizontally?"
+    },
+    {
+      "scenarioId": "traffic-spike",
+      "draftPool": ["container-orchestrator", "auto-scaler", "observability-stack", "cicd-pipeline"],
+      "draftPicks": 2,
+      "draftHint": "You're going to production. Enterprise customers need SLAs and operational visibility. What will make your system reliable at scale?"
+    },
+    {
+      "scenarioId": "production-scale",
+      "draftPool": [],
+      "draftPicks": 0,
+      "draftHint": ""
+    }
+  ]
+}

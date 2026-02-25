@@ -1,0 +1,27 @@
+{
+  "id": "production-scale",
+  "name": "Production Scale",
+  "briefing": "Your startup is serious business now. Enterprise customers demand SLAs. The board is watching the burn rate. You have all the tools you've earned — but a fixed budget means you can't run everything. Choose which parts of your architecture earn their place. Every resource point must justify itself.",
+  "deckId": "system-design-patterns",
+  "totalResources": 14,
+  "baseMetrics": {
+    "latency":     { "base": 250,  "unit": "ms",   "label": "Response Time",  "lowerIsBetter": true },
+    "throughput":  { "base": 2000, "unit": "req/s", "label": "Throughput",     "lowerIsBetter": false },
+    "reliability": { "base": 93.0, "unit": "%",     "label": "Uptime",         "lowerIsBetter": false, "cap": 99.99 },
+    "monthlyCost": { "base": 0,    "unit": "$/mo",  "label": "Monthly Cost",   "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "latency",      "operator": "<=", "value": 110,   "label": "Response time under 110ms" },
+    { "metric": "throughput",   "operator": ">=", "value": 12000, "label": "Handle 12K+ requests/sec" },
+    { "metric": "reliability",  "operator": ">=", "value": 99.5,  "label": "99.5%+ uptime" },
+    { "metric": "monthlyCost",  "operator": "<=", "value": 1200,  "label": "Under $1,200/month" }
+  ],
+  "availableCards": [
+    "event-driven-runtime", "thread-based-backend", "reverse-proxy",
+    "relational-db", "document-store",
+    "in-memory-cache", "distributed-cache",
+    "containerization", "container-orchestrator", "load-balancer",
+    "cdn", "observability-stack", "rate-limiter", "message-queue", "object-storage",
+    "search-engine", "api-gateway", "web-app-firewall", "auto-scaler", "cicd-pipeline"
+  ]
+}

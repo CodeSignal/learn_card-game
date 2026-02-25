@@ -1,0 +1,24 @@
+{
+  "id": "ml-platform-complete",
+  "name": "Production ML Platform",
+  "briefing": "Your ML platform serves 20 models under SLA. A single model degradation last quarter caused $400K in fraud losses that went undetected for 10 days. Leadership demands: models stay fresh, retraining is fast, and any quality drop triggers an alert. Every dollar of infra must justify its impact.",
+  "deckId": "ml-infrastructure",
+  "totalResources": 18,
+  "baseMetrics": {
+    "trainingCost": { "base": 300,  "unit": "min",  "label": "Training Time",   "lowerIsBetter": true },
+    "modelFreshness": { "base": 20, "unit": "%",    "label": "Model Freshness", "lowerIsBetter": false, "cap": 100 },
+    "reliability":  { "base": 90.0, "unit": "%",    "label": "System Uptime",   "lowerIsBetter": false, "cap": 99.99 },
+    "infraCost":    { "base": 0,    "unit": "$/mo", "label": "Infra Cost",      "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "trainingCost",   "operator": "<=", "value": 100,  "label": "Train in under 100 minutes" },
+    { "metric": "modelFreshness", "operator": ">=", "value": 80,   "label": "Model freshness ≥ 80%" },
+    { "metric": "reliability",    "operator": ">=", "value": 98.5, "label": "98.5%+ system uptime" },
+    { "metric": "infraCost",      "operator": "<=", "value": 1500, "label": "Under $1,500/month" }
+  ],
+  "availableCards": [
+    "batch-training", "streaming-training", "data-warehouse",
+    "online-inference", "batch-inference", "feature-store", "experiment-tracker",
+    "model-registry", "stream-processor", "automl", "gpu-cluster", "model-monitor"
+  ]
+}

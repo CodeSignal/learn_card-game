@@ -1,0 +1,196 @@
+{
+  "deckId": "ml-infrastructure",
+  "deckName": "ML Infrastructure",
+  "deckDescription": "Architectural patterns for building reliable machine learning systems in production. Each card represents a design decision that shapes how your ML platform behaves at scale.",
+  "cards": [
+    {
+      "id": "batch-training",
+      "name": "Batch Training Pipeline",
+      "type": "training",
+      "icon": "🏋️",
+      "cost": 2,
+      "description": "Trains models on a scheduled cadence (nightly, weekly) using a full dataset snapshot. Examples: Spark MLlib, scikit-learn on Airflow.",
+      "bestFor": "Stable datasets, daily/weekly refresh cycles, when the cost of continuous training outweighs freshness benefits",
+      "notGreatFor": "Fraud detection or recommendation engines where data drifts within hours — use a streaming training approach",
+      "effects": { "trainingCost": -60, "modelFreshness": 30, "reliability": 2.0, "infraCost": 80 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "feature-store", "metric": "modelFreshness", "bonus": 15, "reason": "Pre-computed features reduce training time and improve freshness" }
+      ],
+      "tags": ["training", "batch", "pipeline"]
+    },
+    {
+      "id": "streaming-training",
+      "name": "Continuous / Online Training",
+      "type": "training",
+      "icon": "🌊",
+      "cost": 4,
+      "description": "Model updates incrementally as new data arrives in real time. Examples: Kafka + Flink ML, River (online learning).",
+      "bestFor": "Rapidly drifting data, personalisation, fraud detection — models that must react to behaviour within minutes",
+      "notGreatFor": "Small teams or infrequent model changes — the infrastructure overhead is high",
+      "effects": { "trainingCost": -20, "modelFreshness": 90, "reliability": 1.0, "infraCost": 250 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "stream-processor", "metric": "modelFreshness", "bonus": 20, "reason": "Stream processor feeds training events with minimal lag" }
+      ],
+      "tags": ["training", "streaming", "online-learning"]
+    },
+    {
+      "id": "batch-inference",
+      "name": "Batch Inference Engine",
+      "type": "inference",
+      "icon": "⚙️",
+      "cost": 2,
+      "description": "Runs predictions on a large dataset periodically and stores results for later lookup. Examples: Spark, Dask, BigQuery ML.",
+      "bestFor": "Pre-computed recommendations, overnight risk scoring, any use case where predictions can be generated ahead of time",
+      "notGreatFor": "Real-time user-facing predictions where freshness matters — results may already be stale when served",
+      "effects": { "trainingCost": 0, "modelFreshness": 20, "reliability": 2.5, "infraCost": 60 },
+      "prerequisites": ["training"],
+      "synergies": [
+        { "with": "feature-store", "metric": "reliability", "bonus": 1.0, "reason": "Consistent features between training and inference reduce skew" },
+        { "with": "streaming-training", "metric": "modelFreshness", "bonus": -25, "reason": "Continuous training updates go stale in batch predictions — freshness is wasted" }
+      ],
+      "tags": ["inference", "batch", "offline"]
+    },
+    {
+      "id": "online-inference",
+      "name": "Online Inference Service",
+      "type": "inference",
+      "icon": "🚀",
+      "cost": 3,
+      "description": "Low-latency model serving endpoint that returns predictions in real time. Examples: TensorFlow Serving, Triton, FastAPI + model.",
+      "bestFor": "Real-time recommendations, fraud scoring at checkout, any prediction needed synchronously in a user request",
+      "notGreatFor": "Bulk predictions over millions of rows — batch inference is far cheaper at that scale",
+      "effects": { "trainingCost": -30, "modelFreshness": 60, "reliability": 1.5, "infraCost": 180 },
+      "prerequisites": ["training"],
+      "synergies": [
+        { "with": "model-registry", "metric": "reliability", "bonus": 1.5, "reason": "Versioned model promotion enables zero-downtime model swaps" }
+      ],
+      "tags": ["inference", "realtime", "serving"]
+    },
+    {
+      "id": "feature-store",
+      "name": "Feature Store",
+      "type": "data",
+      "icon": "🏪",
+      "cost": 3,
+      "description": "Centralised repository for computed features with offline (training) and online (inference) access paths. Examples: Feast, Tecton, Hopsworks.",
+      "bestFor": "Teams reusing features across models, eliminating training-serving skew, point-in-time correct training data",
+      "notGreatFor": "Early-stage projects with one model — the setup cost exceeds the benefit until you have multiple models sharing features",
+      "effects": { "trainingCost": -20, "modelFreshness": 25, "reliability": 2.0, "infraCost": 150 },
+      "prerequisites": [],
+      "synergies": [],
+      "tags": ["data", "features", "platform"]
+    },
+    {
+      "id": "data-warehouse",
+      "name": "Analytical Data Warehouse",
+      "type": "data",
+      "icon": "🗃️",
+      "cost": 3,
+      "description": "Columnar store optimised for large analytical queries. Examples: BigQuery, Redshift, Snowflake.",
+      "bestFor": "Training data preparation, offline feature computation, business analytics alongside ML workloads",
+      "notGreatFor": "Low-latency online feature serving — columnar stores are too slow for sub-10ms lookups",
+      "effects": { "trainingCost": -40, "modelFreshness": 20, "reliability": 2.5, "infraCost": 200 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "feature-store", "metric": "reliability", "bonus": 1.5, "reason": "Warehouse serves as the offline store behind the feature store" }
+      ],
+      "tags": ["data", "analytics", "storage"]
+    },
+    {
+      "id": "experiment-tracker",
+      "name": "Experiment Tracker",
+      "type": "platform",
+      "icon": "🧪",
+      "cost": 2,
+      "description": "Logs hyperparameters, metrics, and artefacts for every training run. Makes results reproducible and comparable. Examples: MLflow, W&B, Comet.",
+      "bestFor": "Teams running multiple experiments in parallel, reproducing results, comparing model versions before promotion",
+      "notGreatFor": "Single-model, single-run projects — the overhead isn't worth it yet",
+      "effects": { "trainingCost": 0, "modelFreshness": 10, "reliability": 2.0, "infraCost": 40 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "model-registry", "metric": "reliability", "bonus": 1.0, "reason": "Tracked experiments feed directly into model promotion workflows" }
+      ],
+      "tags": ["platform", "experimentation", "reproducibility"]
+    },
+    {
+      "id": "model-registry",
+      "name": "Model Registry",
+      "type": "platform",
+      "icon": "📋",
+      "cost": 2,
+      "description": "Versioned store for trained model artefacts with staging/production promotion workflows. Examples: MLflow Model Registry, SageMaker Model Registry.",
+      "bestFor": "Controlled model deployments, rollback capability, audit trails for regulated industries",
+      "notGreatFor": "Rapid prototyping — model versioning adds process overhead in early stages",
+      "effects": { "trainingCost": 0, "modelFreshness": 15, "reliability": 2.5, "infraCost": 50 },
+      "prerequisites": ["training"],
+      "synergies": [],
+      "tags": ["platform", "versioning", "deployment"]
+    },
+    {
+      "id": "stream-processor",
+      "name": "Stream Processor",
+      "type": "data",
+      "icon": "💧",
+      "cost": 3,
+      "description": "Processes event streams in real time for feature computation and data enrichment. Examples: Apache Flink, Kafka Streams, Spark Streaming.",
+      "bestFor": "Real-time feature computation, event-driven training triggers, low-latency data pipelines feeding online inference",
+      "notGreatFor": "Batch-only workloads — adds operational complexity with no benefit if data is processed hourly or daily",
+      "effects": { "trainingCost": -10, "modelFreshness": 40, "reliability": 1.5, "infraCost": 150 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "online-inference", "metric": "modelFreshness", "bonus": 20, "reason": "Real-time features fed directly to the serving layer" }
+      ],
+      "tags": ["data", "streaming", "real-time"]
+    },
+    {
+      "id": "model-monitor",
+      "name": "Model Monitor",
+      "type": "platform",
+      "icon": "📡",
+      "cost": 2,
+      "description": "Tracks data drift, prediction drift, and model performance degradation in production. Alerts when retraining is needed. Examples: Evidently, WhyLabs, Arize.",
+      "bestFor": "Production models, detecting concept drift, meeting SLAs on model quality",
+      "notGreatFor": "Pre-production — monitoring adds value only once real traffic is flowing",
+      "effects": { "trainingCost": 0, "modelFreshness": 20, "reliability": 3.0, "infraCost": 60 },
+      "prerequisites": ["inference"],
+      "synergies": [
+        { "with": "experiment-tracker", "metric": "reliability", "bonus": 1.0, "reason": "Drift alerts can automatically trigger retraining experiments" }
+      ],
+      "tags": ["platform", "observability", "reliability"]
+    },
+    {
+      "id": "gpu-cluster",
+      "name": "GPU Cluster",
+      "type": "compute",
+      "icon": "🖥️",
+      "cost": 5,
+      "description": "Dedicated GPU instances for accelerated model training. Examples: AWS p3/p4, GCP A100s, on-prem H100s.",
+      "bestFor": "Deep learning, LLMs, computer vision — any model architecture where GPU parallelism cuts training time by 10-100x",
+      "notGreatFor": "Classical ML (tree models, linear models) — CPUs are cheaper and plenty fast",
+      "effects": { "trainingCost": -120, "modelFreshness": 50, "reliability": 1.0, "infraCost": 400 },
+      "prerequisites": ["training"],
+      "synergies": [
+        { "with": "streaming-training", "metric": "modelFreshness", "bonus": 25, "reason": "GPU-accelerated online learning trains faster on incoming data" }
+      ],
+      "tags": ["compute", "gpu", "deep-learning"]
+    },
+    {
+      "id": "automl",
+      "name": "AutoML / HPO",
+      "type": "training",
+      "icon": "🤖",
+      "cost": 3,
+      "description": "Automated hyperparameter optimisation and neural architecture search. Examples: Optuna, Ray Tune, Google AutoML.",
+      "bestFor": "Systematically finding better models without manual tuning, maximising model performance on a fixed dataset",
+      "notGreatFor": "Time-sensitive releases — HPO trials can take hours or days; it's an optimisation step, not a shortcut",
+      "effects": { "trainingCost": -50, "modelFreshness": 20, "reliability": 1.5, "infraCost": 120 },
+      "prerequisites": ["training"],
+      "synergies": [
+        { "with": "experiment-tracker", "metric": "reliability", "bonus": 1.5, "reason": "Every HPO trial is tracked, making it easy to compare and reproduce the best run" }
+      ],
+      "tags": ["training", "automation", "optimisation"]
+    }
+  ]
+}

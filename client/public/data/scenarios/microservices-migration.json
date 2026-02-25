@@ -1,0 +1,25 @@
+{
+  "id": "microservices-migration",
+  "name": "Microservices Migration",
+  "briefing": "Your company's monolith is creaking under the load. The CTO wants to migrate to microservices — but the budget is tight and downtime is unacceptable. Choose wisely: every piece of infrastructure you add increases complexity and cost.",
+  "deckId": "system-architecture",
+  "totalResources": 16,
+  "baseMetrics": {
+    "latency": { "base": 400, "unit": "ms", "label": "Response Time", "lowerIsBetter": true },
+    "throughput": { "base": 500, "unit": "req/s", "label": "Throughput", "lowerIsBetter": false },
+    "reliability": { "base": 92.0, "unit": "%", "label": "Uptime", "lowerIsBetter": false, "cap": 99.99 },
+    "monthlyCost": { "base": 200, "unit": "$/mo", "label": "Monthly Cost", "lowerIsBetter": true }
+  },
+  "goals": [
+    { "metric": "latency", "operator": "<=", "value": 150, "label": "Response time under 150ms" },
+    { "metric": "throughput", "operator": ">=", "value": 8000, "label": "Handle 8K+ requests/sec" },
+    { "metric": "reliability", "operator": ">=", "value": 99.5, "label": "99.5%+ uptime" },
+    { "metric": "monthlyCost", "operator": "<=", "value": 1200, "label": "Under $1,200/month" }
+  ],
+  "availableCards": [
+    "nodejs", "python-flask", "nginx", "postgresql", "mongodb",
+    "redis", "docker", "kubernetes", "load-balancer",
+    "cdn", "monitoring", "message-queue",
+    "api-gateway", "auto-scaler", "ci-cd"
+  ]
+}

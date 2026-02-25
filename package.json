@@ -1,0 +1,32 @@
+{
+  "name": "learn-card-game",
+  "version": "0.0.1",
+  "description": "Tech card game bespoke simulation - build systems by playing technology cards",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm run start:prod",
+    "start:prod": "IS_PRODUCTION=true node server.js",
+    "start:dev": "concurrently \"npm run dev:vite\" \"npm run dev:api\"",
+    "dev:vite": "vite",
+    "dev:api": "PORT=3031 node server.js",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "bespoke",
+    "card-game",
+    "simulation",
+    "system-architecture"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.18"
+  }
+}

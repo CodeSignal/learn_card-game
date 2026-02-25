@@ -1,0 +1,281 @@
+{
+  "deckId": "system-architecture",
+  "deckName": "System Architecture",
+  "deckDescription": "Technologies and infrastructure for building scalable web systems",
+  "cards": [
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "type": "backend",
+      "icon": "🟢",
+      "cost": 2,
+      "description": "JavaScript runtime for building fast, scalable server-side applications",
+      "effects": { "latency": -50, "throughput": 1500, "reliability": 1.5, "monthlyCost": 100 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "mongodb", "metric": "throughput", "bonus": 500, "reason": "Native JSON document handling" }
+      ],
+      "tags": ["backend", "runtime", "javascript"]
+    },
+    {
+      "id": "python-flask",
+      "name": "Flask API",
+      "type": "backend",
+      "icon": "🐍",
+      "cost": 2,
+      "description": "Lightweight Python web framework, great for rapid API development",
+      "effects": { "latency": -30, "throughput": 800, "reliability": 1.5, "monthlyCost": 80 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "elasticsearch", "metric": "latency", "bonus": -15, "reason": "Elasticsearch-py native client" }
+      ],
+      "tags": ["backend", "runtime", "python"]
+    },
+    {
+      "id": "nginx",
+      "name": "Nginx",
+      "type": "infrastructure",
+      "icon": "🔺",
+      "cost": 2,
+      "description": "High-performance reverse proxy and web server for static content",
+      "effects": { "latency": -30, "throughput": 2000, "reliability": 1.0, "monthlyCost": 30 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "cdn", "metric": "latency", "bonus": -20, "reason": "Edge + origin caching layers" }
+      ],
+      "tags": ["infrastructure", "proxy", "webserver"]
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "type": "database",
+      "icon": "🐘",
+      "cost": 3,
+      "description": "Powerful open-source relational database with ACID compliance",
+      "effects": { "latency": -10, "throughput": 500, "reliability": 2.5, "monthlyCost": 200 },
+      "prerequisites": [],
+      "synergies": [],
+      "tags": ["database", "relational", "sql"]
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "type": "database",
+      "icon": "🍃",
+      "cost": 2,
+      "description": "Flexible document database for schema-less data storage",
+      "effects": { "latency": -5, "throughput": 1000, "reliability": 1.5, "monthlyCost": 150 },
+      "prerequisites": [],
+      "synergies": [],
+      "tags": ["database", "nosql", "document"]
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "type": "cache",
+      "icon": "🔴",
+      "cost": 3,
+      "description": "Blazing-fast in-memory data store for caching and session management",
+      "effects": { "latency": -80, "throughput": 3000, "reliability": 1.0, "monthlyCost": 150 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "postgresql", "metric": "latency", "bonus": -25, "reason": "Query result caching eliminates repeated DB hits" },
+        { "with": "nodejs", "metric": "throughput", "bonus": 1000, "reason": "ioredis async pipelining" }
+      ],
+      "tags": ["cache", "nosql", "performance"]
+    },
+    {
+      "id": "memcached",
+      "name": "Memcached",
+      "type": "cache",
+      "icon": "⚡",
+      "cost": 2,
+      "description": "Simple, high-performance distributed memory caching system",
+      "effects": { "latency": -60, "throughput": 2000, "reliability": 0.5, "monthlyCost": 80 },
+      "prerequisites": ["backend"],
+      "synergies": [],
+      "tags": ["cache", "performance"]
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "type": "infrastructure",
+      "icon": "🐳",
+      "cost": 2,
+      "description": "Container platform for consistent deployments across environments",
+      "effects": { "latency": 0, "throughput": 500, "reliability": 2.0, "monthlyCost": 20 },
+      "prerequisites": ["backend"],
+      "synergies": [],
+      "tags": ["infrastructure", "containers", "devops"]
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "type": "infrastructure",
+      "icon": "☸️",
+      "cost": 4,
+      "description": "Container orchestration for automated deployment, scaling, and management",
+      "effects": { "latency": -10, "throughput": 2000, "reliability": 2.5, "monthlyCost": 250 },
+      "prerequisites": ["docker"],
+      "synergies": [
+        { "with": "docker", "metric": "reliability", "bonus": 1.5, "reason": "Self-healing containers with automatic restarts" },
+        { "with": "docker", "metric": "throughput", "bonus": 2000, "reason": "Horizontal pod autoscaling" }
+      ],
+      "tags": ["infrastructure", "orchestration", "devops"]
+    },
+    {
+      "id": "load-balancer",
+      "name": "Load Balancer",
+      "type": "infrastructure",
+      "icon": "⚖️",
+      "cost": 2,
+      "description": "Distributes incoming traffic across multiple server instances",
+      "effects": { "latency": -15, "throughput": 3000, "reliability": 2.0, "monthlyCost": 100 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "nginx", "metric": "reliability", "bonus": 1.5, "reason": "Health checks + graceful failover" }
+      ],
+      "tags": ["infrastructure", "networking", "scaling"]
+    },
+    {
+      "id": "cdn",
+      "name": "CDN",
+      "type": "infrastructure",
+      "icon": "🌐",
+      "cost": 2,
+      "description": "Content delivery network for serving static assets from edge locations",
+      "effects": { "latency": -100, "throughput": 4000, "reliability": 1.0, "monthlyCost": 120 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "s3-storage", "metric": "latency", "bonus": -30, "reason": "S3 as CDN origin with edge caching" }
+      ],
+      "tags": ["infrastructure", "networking", "performance"]
+    },
+    {
+      "id": "monitoring",
+      "name": "Monitoring Stack",
+      "type": "observability",
+      "icon": "📊",
+      "cost": 2,
+      "description": "Prometheus + Grafana for metrics, alerting, and dashboards",
+      "effects": { "latency": 0, "throughput": 0, "reliability": 2.5, "monthlyCost": 60 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "kubernetes", "metric": "reliability", "bonus": 1.0, "reason": "Pod health metrics + auto-recovery triggers" }
+      ],
+      "tags": ["observability", "devops", "reliability"]
+    },
+    {
+      "id": "rate-limiter",
+      "name": "Rate Limiter",
+      "type": "security",
+      "icon": "🚦",
+      "cost": 1,
+      "description": "Protects APIs from abuse by limiting request rates per client",
+      "effects": { "latency": 5, "throughput": -500, "reliability": 2.0, "monthlyCost": 10 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "api-gateway", "metric": "reliability", "bonus": 1.0, "reason": "Centralized rate limiting at the gateway" }
+      ],
+      "tags": ["security", "protection", "api"]
+    },
+    {
+      "id": "message-queue",
+      "name": "Message Queue",
+      "type": "messaging",
+      "icon": "📨",
+      "cost": 3,
+      "description": "RabbitMQ for decoupling services and handling async workloads",
+      "effects": { "latency": -30, "throughput": 2000, "reliability": 1.5, "monthlyCost": 120 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "redis", "metric": "throughput", "bonus": 500, "reason": "Redis-backed queue acknowledgments" }
+      ],
+      "tags": ["messaging", "async", "decoupling"]
+    },
+    {
+      "id": "s3-storage",
+      "name": "Object Storage",
+      "type": "storage",
+      "icon": "🪣",
+      "cost": 1,
+      "description": "S3-compatible storage for files, images, backups, and static assets",
+      "effects": { "latency": -10, "throughput": 500, "reliability": 1.0, "monthlyCost": 30 },
+      "prerequisites": [],
+      "synergies": [],
+      "tags": ["storage", "cloud", "static"]
+    },
+    {
+      "id": "elasticsearch",
+      "name": "Elasticsearch",
+      "type": "search",
+      "icon": "🔍",
+      "cost": 3,
+      "description": "Distributed search and analytics engine for full-text search",
+      "effects": { "latency": -15, "throughput": 500, "reliability": 1.0, "monthlyCost": 180 },
+      "prerequisites": ["database"],
+      "synergies": [
+        { "with": "postgresql", "metric": "throughput", "bonus": 500, "reason": "Offloads search queries from the primary DB" }
+      ],
+      "tags": ["search", "analytics", "nosql"]
+    },
+    {
+      "id": "api-gateway",
+      "name": "API Gateway",
+      "type": "infrastructure",
+      "icon": "🚪",
+      "cost": 2,
+      "description": "Centralized entry point for API routing, auth, and throttling",
+      "effects": { "latency": 10, "throughput": 1000, "reliability": 1.5, "monthlyCost": 50 },
+      "prerequisites": ["backend"],
+      "synergies": [
+        { "with": "load-balancer", "metric": "throughput", "bonus": 1000, "reason": "Gateway routing + LB distribution" }
+      ],
+      "tags": ["infrastructure", "api", "routing"]
+    },
+    {
+      "id": "firewall",
+      "name": "WAF / Firewall",
+      "type": "security",
+      "icon": "🛡️",
+      "cost": 1,
+      "description": "Web application firewall filtering malicious traffic at the edge",
+      "effects": { "latency": 5, "throughput": -200, "reliability": 2.0, "monthlyCost": 40 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "rate-limiter", "metric": "reliability", "bonus": 1.0, "reason": "Layered defense: WAF + rate limiting" }
+      ],
+      "tags": ["security", "protection", "networking"]
+    },
+    {
+      "id": "auto-scaler",
+      "name": "Auto Scaler",
+      "type": "infrastructure",
+      "icon": "📈",
+      "cost": 3,
+      "description": "Dynamically adjusts compute capacity based on traffic demand",
+      "effects": { "latency": 0, "throughput": 3000, "reliability": 1.5, "monthlyCost": 150 },
+      "prerequisites": ["docker"],
+      "synergies": [
+        { "with": "kubernetes", "metric": "throughput", "bonus": 3000, "reason": "HPA + cluster autoscaler" },
+        { "with": "load-balancer", "metric": "throughput", "bonus": 2000, "reason": "LB automatically routes to new instances" }
+      ],
+      "tags": ["infrastructure", "scaling", "cloud"]
+    },
+    {
+      "id": "ci-cd",
+      "name": "CI/CD Pipeline",
+      "type": "devops",
+      "icon": "🔄",
+      "cost": 2,
+      "description": "Automated build, test, and deploy pipeline for rapid iterations",
+      "effects": { "latency": 0, "throughput": 0, "reliability": 2.0, "monthlyCost": 40 },
+      "prerequisites": [],
+      "synergies": [
+        { "with": "docker", "metric": "reliability", "bonus": 1.0, "reason": "Reproducible container builds" },
+        { "with": "monitoring", "metric": "reliability", "bonus": 1.0, "reason": "Deploy health checks + auto-rollback" }
+      ],
+      "tags": ["devops", "automation", "reliability"]
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+/* ===== VICTORY DRAFT BUTTON ===== */
+
+.victory-draft-btn {
+  background: var(--Colors-Backgrounds-Main-Top);
+  color: var(--Colors-Alert-Success-Default);
+  border: none;
+  border-radius: var(--UI-Radius-radius-s, 6px);
+  padding: 4px 14px;
+  font: var(--Fonts-Body-Bold-sm);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.victory-draft-btn:hover { opacity: 0.85; }
+
+/* ===== DRAFT OVERLAY ===== */
+
+.draft-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  animation: fadeIn 0.2s ease;
+}
+
+.draft-screen {
+  background: var(--Colors-Backgrounds-Main-Top);
+  border-radius: var(--UI-Radius-radius-l, 12px);
+  padding: var(--UI-Spacing-spacing-xl);
+  max-width: 780px;
+  width: calc(100vw - 32px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: var(--UI-Spacing-spacing-ml);
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.draft-screen-title {
+  font: var(--Fonts-Heading-h3);
+  color: var(--Colors-Text-Body-Strong);
+  margin: 0;
+}
+
+.draft-screen-hint {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Light);
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--Colors-Backgrounds-Main-Light);
+  border-radius: var(--UI-Radius-radius-s, 6px);
+  border-left: 3px solid var(--Colors-Primary-Default);
+}
+
+.draft-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.draft-card {
+  --type-color: transparent;
+  background: color-mix(in srgb, var(--type-color) 5%, var(--Colors-Backgrounds-Main-Default));
+  border: 2px solid color-mix(in srgb, var(--type-color) 15%, var(--Colors-Stroke-Default));
+  border-radius: var(--UI-Radius-radius-m, 8px);
+  padding: 14px 10px 12px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  position: relative;
+  user-select: none;
+  opacity: 0;
+  animation: draftCardIn 0.3s ease forwards;
+  min-width: 0;
+}
+
+.draft-card:nth-child(1) { animation-delay: 0.05s; }
+.draft-card:nth-child(2) { animation-delay: 0.12s; }
+.draft-card:nth-child(3) { animation-delay: 0.19s; }
+.draft-card:nth-child(4) { animation-delay: 0.26s; }
+
+.draft-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--Colors-Primary-Default);
+}
+
+.draft-card.selected {
+  border-color: var(--Colors-Primary-Default);
+  background: var(--Colors-Primary-Lightest);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.draft-card-check {
+  display: none;
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: var(--Colors-Primary-Default);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.draft-card.selected .draft-card-check { display: block; }
+
+.draft-card-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.draft-card-name {
+  font: var(--Fonts-Body-Bold-sm);
+  color: var(--Colors-Text-Body-Strong);
+  line-height: 1.2;
+}
+
+.draft-card-type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--Colors-Text-Body-Light);
+}
+
+.draft-card-desc {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Default);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.draft-card-best-for {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Alert-Success-Default);
+  line-height: 1.4;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--Colors-Stroke-Default);
+  width: 100%;
+}
+
+.draft-card-best-for span {
+  font-weight: 600;
+}
+
+.draft-confirm-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.draft-confirm-count {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Light);
+}
+
+/* ===== DARK MODE: stronger type-color tint ===== */
+
+@media (prefers-color-scheme: dark) {
+  .draft-card {
+    background: color-mix(in srgb, var(--type-color) 8%, var(--Colors-Backgrounds-Main-Default));
+    border-width: 1.5px;
+    border-color: color-mix(in srgb, var(--type-color) 12%, var(--Colors-Stroke-Default));
+  }
+
+  .draft-card.selected {
+    background: color-mix(in srgb, var(--Colors-Primary-Default) 15%, var(--Colors-Backgrounds-Main-Default));
+  }
+}
