@@ -141,7 +141,7 @@ function handleGetInitialState(req, res) {
 
 async function handleGenerateContent(req, res) {
   const body = await readBody(req);
-  const { prompt, apiKey, model = 'gpt-4o', baseUrl = 'https://api.openai.com/v1', max_tokens, label = 'llm' } = JSON.parse(body);
+  const { prompt, apiKey, model = 'gpt-4o', baseUrl, max_tokens, label = 'llm' } = JSON.parse(body);
 
   if (!prompt) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -149,15 +149,12 @@ async function handleGenerateContent(req, res) {
     return;
   }
 
+  const resolvedBaseUrl = baseUrl || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
   const key = apiKey || process.env.OPENAI_API_KEY;
-  if (!key) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'No API key configured.' }));
-    return;
-  }
+
 
   try {
-    const apiUrl = `${baseUrl.replace(/\/+$/, '')}/chat/completions`;
+    const apiUrl = `${resolvedBaseUrl.replace(/\/+$/, '')}/chat/completions`;
     const payload = JSON.stringify({
       model,
       messages: [{ role: 'user', content: prompt }],
@@ -438,6 +435,12 @@ function handlePostRequest(req, res, parsedUrl) {
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   let pathName = parsedUrl.pathname === '/' ? '/index.html' : parsedUrl.pathname;
+
+  if (process.env.AUTHOR_MODE === 'true' && req.method === 'GET' && parsedUrl.pathname === '/' && !parsedUrl.query.author) {
+    res.writeHead(302, { Location: '/?author=true' });
+    res.end();
+    return;
+  }
 
   if (req.method === 'GET' && parsedUrl.pathname === '/state') {
     handleGetState(req, res);
