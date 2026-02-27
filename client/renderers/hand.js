@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, isAntiSynergy, renderIcon } from './shared.js';
+import { TYPE_COLORS, getTypeColor, isAntiSynergy, renderIcon } from './shared.js';
 import { showTooltip, hideTooltip, moveTooltip } from './tooltip.js';
 import { showCardDetail } from './card-detail.js';
 
@@ -35,7 +35,7 @@ function createHandCard(card, canPlay) {
   const el = document.createElement('div');
   el.className = `card-item${disabled ? ' disabled' : ''}`;
   el.dataset.cardId = card.id;
-  if (TYPE_COLORS[card.type]) el.style.setProperty('--type-color', TYPE_COLORS[card.type]);
+  el.style.setProperty('--type-color', getTypeColor(card.type));
 
   el.innerHTML = `
     <div class="card-cost-badge ${costClass}">⬡ ${card.cost}</div>
@@ -217,8 +217,8 @@ export function renderFilters() {
     const isActive = uiState.activeFilter === type;
     btn.className = `filter-btn ${isActive ? 'active' : ''}`;
     btn.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-    const c = TYPE_COLORS[type];
-    if (c) {
+    const c = getTypeColor(type);
+    {
       if (isActive) {
         btn.style.background = c;
         btn.style.borderColor = c;

@@ -103,8 +103,7 @@ Pure logic module with no DOM dependencies. Key methods:
   "deckId": "system-architecture",
   "totalResources": 20,
   "baseMetrics": { "latency": { "base": 500, "unit": "ms", "label": "Response Time", "lowerIsBetter": true } },
-  "goals": [{ "metric": "latency", "operator": "<=", "value": 200, "label": "..." }],
-  "availableCards": ["nodejs", "redis"]
+  "goals": [{ "metric": "latency", "operator": "<=", "value": 200, "label": "..." }]
 }
 ```
 

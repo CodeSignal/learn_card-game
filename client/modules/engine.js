@@ -25,8 +25,7 @@ import { validateScenario, validateDeck } from './validate.js';
  * @property {Object<string, MetricConfig>} baseMetrics
  * @property {Goal[]} goals
  * @property {number} totalResources
- * @property {string[]} [availableCards] - Card IDs available in this scenario
- * @property {string} [deckId] - Default deck for standalone mode
+ * @property {string} [deckId] - Deck ID associated with this scenario
  */
 
 /**
@@ -126,6 +125,7 @@ export class GameEngine {
     for (const card of deck.cards) {
       this.cardMap.set(card.id, card);
     }
+
   }
 
   /**
@@ -136,7 +136,8 @@ export class GameEngine {
     this.campaign = campaign;
     this.currentEncounterIndex = encounterIndex;
     if (this.handCardIds.length === 0) {
-      this.handCardIds = [...(campaign.encounters[0].startingHand || [])];
+      // Support campaign-level startingHand (preferred) and legacy encounters[0].startingHand
+      this.handCardIds = [...(campaign.startingHand || campaign.encounters[0]?.startingHand || [])];
     }
   }
 
@@ -180,12 +181,7 @@ export class GameEngine {
 
   getAvailableCards() {
     if (!this.scenario) return [];
-    if (this.campaign) {
-      return this.handCardIds
-        .map(id => this.cardMap.get(id))
-        .filter(Boolean);
-    }
-    return (this.scenario.availableCards || [])
+    return this.handCardIds
       .map(id => this.cardMap.get(id))
       .filter(Boolean);
   }
@@ -289,8 +285,7 @@ export class GameEngine {
 
   isAvailable(cardId) {
     if (this.boardCardIds.includes(cardId)) return true;
-    if (this.campaign) return this.handCardIds.includes(cardId);
-    return (this.scenario?.availableCards || []).includes(cardId);
+    return this.handCardIds.includes(cardId);
   }
 
   getResourcesUsed() {

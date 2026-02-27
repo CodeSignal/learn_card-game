@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, deduplicateSynergies, renderSynergyRow, renderIcon } from './shared.js';
+import { getTypeColor, deduplicateSynergies, renderSynergyRow, renderIcon } from './shared.js';
 import { showTooltip, hideTooltip, moveTooltip } from './tooltip.js';
 import { showCardDetail } from './card-detail.js';
 import { updateDropZoneHighlight, clearDropZoneHighlight } from './hand.js';
@@ -31,7 +31,7 @@ export function renderBoardSlots(justPlayedCardId, { onCardRemoved }) {
     slot.className = `slot filled${card.id === justPlayedCardId ? ' just-placed' : ''}${isInactive ? ' inactive' : ''}${isCarried ? ' carried' : ''}`;
     slot.dataset.cardId = card.id;
     slot.dataset.slotIndex = i;
-    if (TYPE_COLORS[card.type]) slot.style.setProperty('--type-color', TYPE_COLORS[card.type]);
+    slot.style.setProperty('--type-color', getTypeColor(card.type));
 
     const prereqBadge = isInactive ? '<div class="slot-prereq-badge" title="Missing prerequisite">⚠</div>' : '';
     const carriedBadge = isCarried ? '<div class="slot-carried-badge" title="Carried from previous encounter">↩</div>' : '';
