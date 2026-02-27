@@ -157,13 +157,8 @@ async function handleDraftConfirmed() {
   const nextScenario = await loadScenario(nextEncounter.scenarioId);
   const clearBoard = nextEncounter.carryForward === false;
 
-  if (!clearBoard) {
-    uiState.carriedCardIds = new Set(uiState.engine.getBoardCardIds());
-  } else {
-    uiState.carriedCardIds = new Set();
-  }
-
   uiState.engine.advanceEncounter(nextScenario);
+  uiState.carriedCardIds = new Set(uiState.engine.carriedCardIds);
   uiState.scenarioData = nextScenario;
   document.getElementById('scenario-name').textContent = nextScenario.name;
   resetEncounterState();
@@ -218,6 +213,7 @@ async function initialize() {
 
       if (savedState) uiState.engine.loadState(savedState);
 
+      uiState.carriedCardIds = new Set(uiState.engine.carriedCardIds);
       uiState.scenarioData = scenario;
       document.getElementById('scenario-name').textContent = scenario.name;
       renderCampaignProgress();

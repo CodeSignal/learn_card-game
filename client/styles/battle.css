@@ -147,6 +147,14 @@
   color: var(--Colors-Alert-Error-Default);
 }
 
+.battle-debrief {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Light);
+  font-style: italic;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
 .battle-result-btn {
   padding: 8px 24px;
   border: none;

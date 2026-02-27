@@ -6,7 +6,18 @@ Given the user's description below, generate a complete set of JSON files: a **c
 
 ## JSON Schemas
 
-### Card (inside a deck)
+### Deck (wrapper object)
+
+```json
+{
+  "deckId": "kebab-case-id",
+  "deckName": "Human Readable Deck Name",
+  "deckDescription": "One sentence describing the deck's domain",
+  "cards": [ ...array of Card objects... ]
+}
+```
+
+### Card (inside deck.cards)
 
 ```json
 {
@@ -104,19 +115,21 @@ Here's one card from an existing deck for reference:
 
 ## Output Format
 
-Return EXACTLY three JSON code blocks, clearly labeled. No other text outside these blocks.
+Return EXACTLY three fenced code blocks using these EXACT labels (not `json`). No other text outside these blocks.
 
 ```deck
-{ ... full deck JSON ... }
+{ "deckId": "...", "deckName": "...", "deckDescription": "...", "cards": [ ... ] }
 ```
 
 ```scenarios
-[ ... array of scenario JSON objects ... ]
+[ { "id": "...", ... }, ... ]
 ```
 
 ```campaign
-{ ... full campaign JSON ... }
+{ "id": "...", "name": "...", ... }
 ```
+
+IMPORTANT: Use `deck`, `scenarios`, `campaign` as the code fence language — NOT `json`.
 
 ## User Description
 

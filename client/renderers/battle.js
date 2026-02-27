@@ -1,5 +1,6 @@
 import { uiState } from '../modules/state.js';
-import { METRIC_LABELS, formatEffect } from './shared.js';
+import { METRIC_LABELS, formatEffect, renderIcon, isAntiSynergy } from './shared.js';
+import { fetchDebrief } from '../modules/debrief.js';
 import { renderHeaderMetrics, renderLastAttempt, renderCampaignProgress } from './header.js';
 import { renderHandCards } from './hand.js';
 import { hideTooltip } from './tooltip.js';
@@ -22,10 +23,12 @@ export function startBattle({ onVictory, onShowWinningPath, onCampaignOver, onRe
 
   const goals = uiState.engine.checkGoals();
   uiState.engine.recordAttempt(goals);
-  runBattleAnimation(goals, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed);
+
+  const debriefPromise = fetchDebrief(uiState.engine, uiState.scenarioData, goals);
+  runBattleAnimation(goals, debriefPromise, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed);
 }
 
-function runBattleAnimation(goals, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed) {
+function runBattleAnimation(goals, debriefPromise, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed) {
   const overlay = document.createElement('div');
   overlay.className = 'battle-overlay';
   overlay.id = 'battle-overlay';
@@ -62,7 +65,7 @@ function runBattleAnimation(goals, onVictory, onShowWinningPath, onCampaignOver,
   document.body.appendChild(overlay);
 
   const allMet = goals.every(g => g.met);
-  animateBattleSequence(overlay, goals, allMet, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed);
+  animateBattleSequence(overlay, goals, allMet, debriefPromise, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed);
 }
 
 function computeBarPositions(goal) {
@@ -84,7 +87,7 @@ function computeBarPositions(goal) {
   return { fillPct, goalPct };
 }
 
-async function animateBattleSequence(overlay, goals, allMet, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed) {
+async function animateBattleSequence(overlay, goals, allMet, debriefPromise, onVictory, onShowWinningPath, onCampaignOver, onRetryUsed) {
   const tests = overlay.querySelectorAll('.battle-test');
 
   for (let i = 0; i < tests.length; i++) {
@@ -126,6 +129,11 @@ async function animateBattleSequence(overlay, goals, allMet, onVictory, onShowWi
 
   await sleep(400);
 
+  const debriefText = await debriefPromise;
+  const debriefHtml = debriefText
+    ? `<div class="battle-debrief">${debriefText}</div>`
+    : '';
+
   const resultDiv = overlay.querySelector('#battle-result');
   if (allMet) {
     const isCampaignEnd = uiState.engine.isLastEncounter() || uiState.campaignEnded;
@@ -136,6 +144,7 @@ async function animateBattleSequence(overlay, goals, allMet, onVictory, onShowWi
 
     resultDiv.innerHTML = `
       <div class="battle-result-text win"><img src="./cosmo/success-jump.svg" alt="Cosmo" class="cosmo-img cosmo-bounce" style="height:48px"> All systems operational!</div>
+      ${debriefHtml}
       <button class="${btnClass}" id="battle-continue">${nextText}</button>
     `;
     resultDiv.classList.add('show');
@@ -169,7 +178,7 @@ async function animateBattleSequence(overlay, goals, allMet, onVictory, onShowWi
     } else if (isInCampaign && retriesRemaining <= 0) {
       const comboCards = feasible && bestCombo?.length > 0
         ? bestCombo.map(id => uiState.engine.getCard(id)).filter(Boolean)
-            .map(c => `<span class="coaching-combo-card">${c.icon} ${c.name}</span>`).join('')
+            .map(c => `<span class="coaching-combo-card">${renderIcon(c.icon)} ${c.name}</span>`).join('')
         : null;
       actionHtml = `
         <div class="retry-counter">No rethinks remaining</div>
@@ -193,6 +202,7 @@ async function animateBattleSequence(overlay, goals, allMet, onVictory, onShowWi
 
     resultDiv.innerHTML = `
       <div class="battle-result-text lose">${failCount} test${failCount > 1 ? 's' : ''} failed</div>
+      ${debriefHtml}
       ${coachingHtml}
       ${actionHtml}
     `;
@@ -253,20 +263,6 @@ function buildCoachingSection(goals, { feasible, bestCombo, isInCampaign, retrie
 
   const parts = [];
 
-  // Goal gap rows
-  const gapLines = failedGoals.map(g => {
-    const metricDef = uiState.scenarioData?.baseMetrics?.[g.metric];
-    const label = metricDef?.label || g.metric;
-    const fmt = METRIC_LABELS[g.metric];
-    const currentStr = fmt ? fmt.short(g.currentValue) : String(Math.round(g.currentValue));
-    const targetStr = fmt ? fmt.short(g.value) : String(Math.round(g.value));
-    return `<div class="coaching-gap-row">
-      <span class="coaching-gap-label">${label}</span>
-      <span class="coaching-gap-values">${currentStr} — need ${g.operator} ${targetStr}</span>
-    </div>`;
-  }).join('');
-  parts.push(`<div class="coaching-gaps">${gapLines}</div>`);
-
   // Feasibility warning — shown whenever the hand can't win
   if (feasible === false) {
     const msg = isInCampaign
@@ -279,9 +275,9 @@ function buildCoachingSection(goals, { feasible, bestCombo, isInCampaign, retrie
   const suggestions = getCardSuggestionsForMetrics(failedGoals.map(g => g.metric));
   if (suggestions.length > 0) {
     const items = suggestions.map(s => {
-      const { label, color } = formatEffect(s.metric, s.effect);
+      const { color } = formatEffect(s.metric, s.effect);
       return `<span class="coaching-card-tag" style="border-color:${color}">
-        ${s.card.icon} ${s.card.name} <span style="color:${color}">${label}</span>
+        ${renderIcon(s.card.icon)} ${s.card.name}
       </span>`;
     }).join('');
     parts.push(`<div class="coaching-suggestions">
@@ -296,29 +292,54 @@ function buildCoachingSection(goals, { feasible, bestCombo, isInCampaign, retrie
 }
 
 /**
- * Score available (not on board) cards by how much they help with the given failing metrics.
- * Returns top suggestions sorted by impact.
+ * Score available (not on board) cards by how much they help with the given failing metrics,
+ * accounting for synergies and anti-synergies with cards already on the board.
  */
 function getCardSuggestionsForMetrics(failingMetrics) {
   const available = uiState.engine.getAvailableCards();
   const boardIds = new Set(uiState.engine.getBoardCardIds());
   const budget = uiState.engine.getResourcesRemaining();
 
+  const boardCards = uiState.engine.getBoardCardIds()
+    .map(id => uiState.engine.getCard(id))
+    .filter(Boolean);
+
   const scored = [];
   for (const card of available) {
     if (boardIds.has(card.id)) continue;
 
+    // Compute synergy/anti-synergy impact this card would have with the board
+    const synergyImpact = {};
+    for (const syn of (card.synergies || [])) {
+      if (boardIds.has(syn.with)) {
+        synergyImpact[syn.metric] = (synergyImpact[syn.metric] || 0) + syn.bonus;
+      }
+    }
+    for (const bc of boardCards) {
+      for (const syn of (bc.synergies || [])) {
+        if (syn.with === card.id) {
+          synergyImpact[syn.metric] = (synergyImpact[syn.metric] || 0) + syn.bonus;
+        }
+      }
+    }
+
     for (const metric of failingMetrics) {
-      const effect = card.effects[metric];
-      if (effect == null || effect === 0) continue;
+      const rawEffect = card.effects[metric] || 0;
+      const synergyBonus = synergyImpact[metric] || 0;
+      const netEffect = rawEffect + synergyBonus;
+      if (netEffect === 0) continue;
 
       const metricDef = uiState.scenarioData?.baseMetrics?.[metric];
       const lowerIsBetter = metricDef?.lowerIsBetter ?? false;
-      const helpful = lowerIsBetter ? effect < 0 : effect > 0;
+      const helpful = lowerIsBetter ? netEffect < 0 : netEffect > 0;
       if (!helpful) continue;
 
+      const hasAntiSynergy = Object.entries(synergyImpact).some(
+        ([m, b]) => isAntiSynergy(b, m)
+      );
+
       const overBudget = card.cost > budget;
-      scored.push({ card, metric, effect, impact: Math.abs(effect), overBudget });
+      scored.push({ card, metric, effect: netEffect, impact: Math.abs(netEffect), overBudget, hasAntiSynergy });
     }
   }
 

@@ -1,12 +1,9 @@
 import { generateContent, parseGeneratedContent, validateContent, checkFeasibility } from '../modules/content-generator.js';
-import { TYPE_COLORS } from './shared.js';
+import { TYPE_COLORS, renderIcon } from './shared.js';
 
 let overlay = null;
 let state = {
   description: '',
-  apiKey: '',
-  model: 'gpt-4o',
-  baseUrl: 'https://api.openai.com/v1',
   loading: false,
   rawResponse: '',
   parsed: null,
@@ -88,15 +85,6 @@ function renderInputTab() {
         placeholder="e.g., A real-time multiplayer game server that needs to handle 100K concurrent players, with matchmaking, leaderboards, and chat. The architecture should prioritize low latency and scalability."
       >${state.description}</textarea>
 
-      <details class="authoring-settings">
-        <summary>LLM Settings</summary>
-        <div class="authoring-settings-grid">
-          <label>API Key <input type="password" id="auth-api-key" class="authoring-input" value="${state.apiKey}" placeholder="sk-..."></label>
-          <label>Model <input type="text" id="auth-model" class="authoring-input" value="${state.model}"></label>
-          <label>Base URL <input type="text" id="auth-base-url" class="authoring-input" value="${state.baseUrl}"></label>
-        </div>
-      </details>
-
       <button class="authoring-generate-btn" id="auth-generate" ${state.loading ? 'disabled' : ''}>
         ${state.loading ? '<span class="authoring-spinner"></span> Generating...' : '🤖 Generate Content'}
       </button>
@@ -123,7 +111,7 @@ function renderPreviewTab() {
     const typeColor = TYPE_COLORS[card.type] || '#888';
     return `
       <div class="authoring-card-preview" style="--type-color: ${typeColor}">
-        <div class="authoring-card-icon">${card.icon || '?'}</div>
+        <div class="authoring-card-icon">${renderIcon(card.icon) || '?'}</div>
         <div class="authoring-card-name">${card.name}</div>
         <div class="authoring-card-cost">⬡ ${card.cost}</div>
         <div class="authoring-card-type" style="background:${typeColor}">${card.type}</div>
@@ -273,9 +261,6 @@ function rerender() {
 
 async function handleGenerate() {
   state.description = overlay.querySelector('#auth-description')?.value || '';
-  state.apiKey = overlay.querySelector('#auth-api-key')?.value || '';
-  state.model = overlay.querySelector('#auth-model')?.value || 'gpt-4o';
-  state.baseUrl = overlay.querySelector('#auth-base-url')?.value || 'https://api.openai.com/v1';
 
   if (!state.description.trim()) return;
 
@@ -287,11 +272,7 @@ async function handleGenerate() {
   rerender();
 
   try {
-    const result = await generateContent(state.description, {
-      apiKey: state.apiKey,
-      model: state.model,
-      baseUrl: state.baseUrl,
-    });
+    const result = await generateContent(state.description);
 
     state.rawResponse = result.content;
     state.parsed = parseGeneratedContent(result.content);

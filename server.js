@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
+require('dotenv').config();
+
 let WebSocket = null;
 let isWebSocketAvailable = false;
 try {
@@ -115,7 +117,7 @@ function handleGetInitialState(req, res) {
 
 async function handleGenerateContent(req, res) {
   const body = await readBody(req);
-  const { prompt, apiKey, model = 'gpt-4o', baseUrl = 'https://api.openai.com/v1' } = JSON.parse(body);
+  const { prompt, apiKey, model = 'gpt-4o', baseUrl = 'https://api.openai.com/v1', max_tokens } = JSON.parse(body);
 
   if (!prompt) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -126,7 +128,7 @@ async function handleGenerateContent(req, res) {
   const key = apiKey || process.env.OPENAI_API_KEY;
   if (!key) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'No API key. Set OPENAI_API_KEY env var or pass apiKey in the request.' }));
+    res.end(JSON.stringify({ error: 'No API key configured.' }));
     return;
   }
 
@@ -136,7 +138,7 @@ async function handleGenerateContent(req, res) {
       model,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
-      max_tokens: 8000,
+      max_tokens: max_tokens || 8000,
     });
 
     const parsedApi = new URL(apiUrl);

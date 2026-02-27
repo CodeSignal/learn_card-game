@@ -427,3 +427,44 @@ html, body {
     display: none;
   }
 }
+
+.card-icon-img {
+  display: block;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.card-icon .card-icon-img {
+  width: clamp(24px, 3.5vw, 36px);
+  height: clamp(24px, 3.5vw, 36px);
+}
+
+.slot-icon .card-icon-img {
+  width: clamp(36px, 4vw, 48px);
+  height: clamp(36px, 4vw, 48px);
+}
+
+.draft-card-icon .card-icon-img {
+  width: 72px;
+  height: 72px;
+}
+
+.cd-icon .card-icon-img {
+  width: 80px;
+  height: 80px;
+}
+
+.tooltip-title .card-icon-img {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+
+.coaching-combo-card .card-icon-img,
+.coaching-card-tag .card-icon-img,
+.synergy-pair .card-icon-img,
+.cd-synergy-partner .card-icon-img {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
