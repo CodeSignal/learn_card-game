@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, renderIcon } from './shared.js';
+import { getTypeColor, renderIcon } from './shared.js';
 import { hideTooltip } from './tooltip.js';
 
 export function showDraftScreen({ onDraftConfirmed }) {
@@ -52,7 +52,7 @@ function createDraftCard(card, picksRequired) {
   const el = document.createElement('div');
   el.className = 'draft-card';
   el.dataset.cardId = card.id;
-  if (TYPE_COLORS[card.type]) el.style.setProperty('--type-color', TYPE_COLORS[card.type]);
+  el.style.setProperty('--type-color', getTypeColor(card.type));
 
   const shortBestFor = card.bestFor
     ? card.bestFor.split(/[,—–]/).slice(0, 2).join(',').trim()

@@ -5,19 +5,57 @@
   "deckId": "ml-infrastructure",
   "totalResources": 12,
   "baseMetrics": {
-    "trainingCost": { "base": 200,  "unit": "min",  "label": "Training Time",   "lowerIsBetter": true },
-    "modelFreshness": { "base": 20, "unit": "%",    "label": "Model Freshness", "lowerIsBetter": false, "cap": 100 },
-    "reliability":  { "base": 91.0, "unit": "%",    "label": "System Uptime",   "lowerIsBetter": false, "cap": 99.99 },
-    "infraCost":    { "base": 0,    "unit": "$/mo", "label": "Infra Cost",      "lowerIsBetter": true }
+    "trainingCost": {
+      "base": 200,
+      "unit": "min",
+      "label": "Training Time",
+      "lowerIsBetter": true
+    },
+    "modelFreshness": {
+      "base": 20,
+      "unit": "%",
+      "label": "Model Freshness",
+      "lowerIsBetter": false,
+      "cap": 100
+    },
+    "reliability": {
+      "base": 91,
+      "unit": "%",
+      "label": "System Uptime",
+      "lowerIsBetter": false,
+      "cap": 99.99
+    },
+    "infraCost": {
+      "base": 0,
+      "unit": "$/mo",
+      "label": "Infra Cost",
+      "lowerIsBetter": true
+    }
   },
   "goals": [
-    { "metric": "trainingCost",   "operator": "<=", "value": 120,  "label": "Train in under 120 minutes" },
-    { "metric": "modelFreshness", "operator": ">=", "value": 55,   "label": "Model freshness ≥ 55%" },
-    { "metric": "reliability",    "operator": ">=", "value": 95.0, "label": "95%+ system uptime" },
-    { "metric": "infraCost",      "operator": "<=", "value": 700,  "label": "Under $700/month" }
-  ],
-  "availableCards": [
-    "batch-training", "streaming-training", "data-warehouse",
-    "online-inference", "batch-inference", "feature-store", "experiment-tracker"
+    {
+      "metric": "trainingCost",
+      "operator": "<=",
+      "value": 120,
+      "label": "Train in under 120 minutes"
+    },
+    {
+      "metric": "modelFreshness",
+      "operator": ">=",
+      "value": 55,
+      "label": "Model freshness ≥ 55%"
+    },
+    {
+      "metric": "reliability",
+      "operator": ">=",
+      "value": 95,
+      "label": "95%+ system uptime"
+    },
+    {
+      "metric": "infraCost",
+      "operator": "<=",
+      "value": 700,
+      "label": "Under $700/month"
+    }
   ]
 }

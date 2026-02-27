@@ -4,10 +4,10 @@
   "description": "Build a production-grade system from scratch, one architectural layer at a time.",
   "deckId": "system-design-patterns",
   "maxRetries": 3,
+  "startingHand": ["event-driven-runtime", "relational-db", "document-store"],
   "encounters": [
     {
       "scenarioId": "startup-launch",
-      "startingHand": ["event-driven-runtime", "relational-db", "document-store"],
       "draftPool": ["in-memory-cache", "distributed-cache", "cdn", "reverse-proxy"],
       "draftPicks": 2,
       "draftHint": "Traffic is growing. Users are hitting your database on every request. What will you add to handle the load?"

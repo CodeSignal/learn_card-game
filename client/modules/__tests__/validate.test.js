@@ -209,12 +209,6 @@ describe('validateDeck', () => {
     expect(errors.filter(e => e.includes('prerequisite'))).toEqual([]);
   });
 
-  it('errors when scenario.availableCards references unknown card', () => {
-    const scen = validScenario({ availableCards: ['ghost'] });
-    const errors = validateDeck(validDeck(), scen);
-    expect(errors.some(e => e.includes("availableCards references unknown card 'ghost'"))).toBe(true);
-  });
-
   it('validates without scenario context (null scenario)', () => {
     const card = validCard({ effects: { anything: 5 } });
     const errors = validateDeck(validDeck([card]), null);

@@ -110,10 +110,26 @@ export function fetchDebrief(engine, scenarioData, goals) {
   const swapsNeeded = bestCombo?.length ? Math.max(bestComboSet.size - boardOverlap, boardCardIds.length - boardOverlap) : 0;
   const needsTotalRethink = feasible && swapsNeeded > 2;
 
+  const cardsToRemove = boardCardObjs.filter(c => !bestComboSet.has(c.id));
+  const cardsToAdd = (bestCombo || [])
+    .filter(id => !boardIdSet.has(id))
+    .map(id => engine.getCard(id))
+    .filter(Boolean);
+
   if (!allMet && feasible === false) {
     contextLines += `\nCRITICAL: No combination of cards in hand can pass all goals — this is a draft dead end.`;
-  } else if (needsTotalRethink) {
-    contextLines += `\nA winning combo exists but shares only ${boardOverlap}/${boardCardIds.length} cards with the current board — most of the architecture needs rebuilding.`;
+  } else if (!allMet && feasible) {
+    if (cardsToRemove.length > 0) {
+      const removeTypes = [...new Set(cardsToRemove.map(c => c.type))];
+      contextLines += `\n${removeTypes.map(t => `A '${t}' component on the board is not in any winning combination — it wastes budget or hurts a goal.`).join(' ')}`;
+    }
+    if (cardsToAdd.length > 0) {
+      const addTypes = [...new Set(cardsToAdd.map(c => c.type))];
+      contextLines += `\n${addTypes.map(t => `A '${t}' component from the hand is in the winning combination but not on the board.`).join(' ')}`;
+    }
+    if (needsTotalRethink) {
+      contextLines += `\nThe winning combo shares only ${boardOverlap}/${boardCardIds.length} cards with the current board — most of the architecture needs rebuilding.`;
+    }
   }
 
   let directive;
@@ -127,16 +143,18 @@ export function fetchDebrief(engine, scenarioData, goals) {
     }
   } else if (feasible === false) {
     directive = 'No card combination from the hand can win. The draft choices created a dead end. Hint at what kind of cards should have been drafted.';
-  } else if (needsTotalRethink) {
-    directive = 'The board needs a fundamentally different combination — most cards need swapping. Suggest a different architectural direction.';
-  } else {
-    if (antiSynergies.length > 0) {
-      directive = 'Explain the architectural conflict between the anti-synergy cards.';
-    } else if (missedSynergies.length > 0) {
+  } else if (cardsToRemove.length > 0 && cardsToAdd.length > 0) {
+    directive = 'Explain WHY a component on the board is architecturally wrong for this scenario — what property it lacks. Do not say what to replace it with.';
+  } else if (cardsToRemove.length > 0) {
+    directive = 'Explain WHY a component on the board is counterproductive for this scenario — what architectural property makes it harmful here.';
+  } else if (cardsToAdd.length > 0) {
+    if (missedSynergies.length > 0) {
       directive = 'Hint at an unused card in hand that pairs well with something on the board.';
     } else {
       directive = 'Explain the architectural gap — what kind of component is missing.';
     }
+  } else {
+    directive = 'Explain the architectural gap — what kind of component is missing.';
   }
 
   const prompt = `You are a senior architect giving a quick post-deployment verdict.
@@ -145,9 +163,9 @@ Architecture deployed: ${boardCards.join(', ')}.${contextLines}
 Metrics: ${goalSummary}.
 RULES:
 - Do NOT restate metric names or numbers — the player already sees those.
-- Do NOT name specific cards. Describe the architectural concept or pattern type instead (e.g. "caching layer" not "In-memory Cache", "async decoupling" not "Message Queue").
+- Do NOT name or closely paraphrase any card. Use broad architectural concepts only (e.g. "persistent storage" not "document store", "query offloading" not "search engine"). The player must figure out which specific card to swap.
 - Focus on architectural REASONING: why patterns conflict, complement, or what kind of component is missing.
-- MAX 10 words. No filler. No quotes. No labels like "Verdict:". Start directly with the insight.
+- MAX 15 words. No filler. No quotes. No labels like "Verdict:". Start directly with the insight.
 ${directive}`;
 
   const controller = new AbortController();

@@ -197,46 +197,25 @@ async function initialize() {
 
     const savedState = await loadSavedState();
     const initial = await loadInitialState();
-    const campaignId = initial?.campaignId || savedState?.campaignId;
+    const campaignId = initial?.campaignId || savedState?.campaignId || 'system-design-journey';
 
-    if (campaignId) {
-      uiState.campaignData = await loadCampaign(campaignId);
-      const deck = await loadDeck(uiState.campaignData.deckId);
+    uiState.campaignData = await loadCampaign(campaignId);
+    const deck = await loadDeck(uiState.campaignData.deckId);
 
-      const encounterIndex = savedState?.currentEncounterIndex ?? 0;
-      const encounter = uiState.campaignData.encounters[encounterIndex];
-      const scenario = await loadScenario(encounter.scenarioId);
+    const encounterIndex = savedState?.currentEncounterIndex ?? 0;
+    const encounter = uiState.campaignData.encounters[encounterIndex];
+    const scenario = await loadScenario(encounter.scenarioId);
 
-      uiState.engine.loadScenario(scenario, deck);
-      surfaceValidationErrors();
-      uiState.engine.setupCampaign(uiState.campaignData, encounterIndex);
+    uiState.engine.loadScenario(scenario, deck);
+    surfaceValidationErrors();
+    uiState.engine.setupCampaign(uiState.campaignData, encounterIndex);
 
-      if (savedState) uiState.engine.loadState(savedState);
+    if (savedState) uiState.engine.loadState(savedState);
 
-      uiState.carriedCardIds = new Set(uiState.engine.carriedCardIds);
-      uiState.scenarioData = scenario;
-      document.getElementById('scenario-name').textContent = scenario.name;
-      renderCampaignProgress();
-    } else {
-      let scenarioId = savedState?.scenarioId;
-      let deckId = savedState?.deckId;
-
-      if (!scenarioId) {
-        scenarioId = initial?.scenarioId || 'high-traffic-webapp';
-        deckId = initial?.deckId || 'system-architecture';
-      }
-
-      const scenario = await loadScenario(scenarioId);
-      const deck = await loadDeck(deckId || scenario.deckId);
-
-      uiState.engine.loadScenario(scenario, deck);
-      surfaceValidationErrors();
-      uiState.scenarioData = scenario;
-
-      if (savedState?.cardsOnBoard) uiState.engine.loadState(savedState);
-
-      document.getElementById('scenario-name').textContent = scenario.name;
-    }
+    uiState.carriedCardIds = new Set(uiState.engine.carriedCardIds);
+    uiState.scenarioData = scenario;
+    document.getElementById('scenario-name').textContent = scenario.name;
+    renderCampaignProgress();
 
     document.getElementById('btn-scenario-info')?.addEventListener('click', toggleScenarioPopup);
     document.getElementById('btn-synergy')?.addEventListener('click', toggleSynergyPopup);

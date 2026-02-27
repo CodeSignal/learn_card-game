@@ -125,13 +125,5 @@ export function validateDeck(deck, scenario) {
     }
   }
 
-  if (scenario?.availableCards) {
-    for (const id of scenario.availableCards) {
-      if (!cardIds.has(id)) {
-        errors.push(`Scenario '${scenario.id}': availableCards references unknown card '${id}'`);
-      }
-    }
-  }
-
   return errors;
 }

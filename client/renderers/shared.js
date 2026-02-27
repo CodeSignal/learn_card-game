@@ -28,6 +28,16 @@ export const TYPE_COLORS = {
   compute: '#f4511e',
 };
 
+/** Returns a color for a card type. Unknown types get a deterministic hue via hash + golden angle. */
+export function getTypeColor(type) {
+  if (!type) return '#888';
+  if (TYPE_COLORS[type]) return TYPE_COLORS[type];
+  let hash = 0;
+  for (let i = 0; i < type.length; i++) hash = (hash * 31 + type.charCodeAt(i)) >>> 0;
+  const hue = Math.round((hash * 137.508) % 360);
+  return `hsl(${hue}, 55%, 38%)`;
+}
+
 export function renderIcon(icon, cls = '') {
   if (icon && (icon.startsWith('/') || icon.startsWith('http'))) {
     return `<img src="${icon}" alt="" class="card-icon-img${cls ? ' ' + cls : ''}" />`;

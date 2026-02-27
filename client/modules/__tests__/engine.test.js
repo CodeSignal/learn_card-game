@@ -78,7 +78,6 @@ function makeScenario(overrides = {}) {
       { metric: 'throughput', operator: '>=', value: 70, label: 'High throughput' },
     ],
     totalResources: 10,
-    availableCards: ['card-a', 'card-b', 'card-c', 'card-d'],
     ...overrides,
   };
 }
@@ -87,9 +86,11 @@ function makeDeck(cards = [cardA, cardB, cardC, cardD]) {
   return { id: 'test-deck', name: 'Test Deck', cards };
 }
 
-function loadedEngine(scenarioOverrides = {}, cards) {
+function loadedEngine(scenarioOverrides = {}, cards, handOverride) {
   const engine = new GameEngine();
-  engine.loadScenario(makeScenario(scenarioOverrides), makeDeck(cards));
+  const deck = makeDeck(cards);
+  engine.loadScenario(makeScenario(scenarioOverrides), deck);
+  engine.handCardIds = handOverride || deck.cards.map(c => c.id);
   return engine;
 }
 
@@ -177,11 +178,11 @@ describe('GameEngine — metric calculation', () => {
 
 describe('GameEngine — goal checking', () => {
   function engineWithGoal(operator, targetValue, metricBase) {
+    const card = makeCard({ id: 'card-only', effects: {}, cost: 1 });
     return loadedEngine({
       baseMetrics: { x: { base: metricBase } },
       goals: [{ metric: 'x', operator, value: targetValue }],
-      availableCards: ['card-only'],
-    }, [makeCard({ id: 'card-only', effects: {}, cost: 1 })]);
+    }, [card], ['card-only']);
   }
 
   it('<= passes when value equals target', () => {
@@ -257,8 +258,7 @@ describe('GameEngine — goal checking', () => {
     const e = loadedEngine({
       baseMetrics: { x: { base: 10 } },
       goals: [{ metric: 'x', operator: '<=', value: 10 }],
-      availableCards: [],
-    }, []);
+    }, [], []);
     expect(e.allGoalsMet()).toBe(true);
   });
 
@@ -269,8 +269,7 @@ describe('GameEngine — goal checking', () => {
         { metric: 'x', operator: '<=', value: 10 },
         { metric: 'x', operator: '<', value: 5 },
       ],
-      availableCards: [],
-    }, []);
+    }, [], []);
     expect(e.allGoalsMet()).toBe(false);
   });
 
@@ -308,9 +307,7 @@ describe('GameEngine — prerequisites', () => {
       prerequisites: ['card-a'],
       cost: 1,
     });
-    const eng = loadedEngine({
-      availableCards: ['card-a', 'card-needs-a'],
-    }, [cardA, cardWithIdPrereq]);
+    const eng = loadedEngine({}, [cardA, cardWithIdPrereq], ['card-a', 'card-needs-a']);
     eng.playCard('card-a');
     expect(eng.checkPrerequisites('card-needs-a').met).toBe(true);
   });
@@ -438,10 +435,7 @@ describe('GameEngine — removeCard', () => {
   });
 
   it('does not let a card satisfy its own prerequisite (self-referential tag)', () => {
-    const eng = loadedEngine(
-      { availableCards: ['card-a', 'card-selfref'] },
-      [cardA, cardSelfRef]
-    );
+    const eng = loadedEngine({}, [cardA, cardSelfRef], ['card-a', 'card-selfref']);
     eng.playCard('card-a');
     const result = eng.playCard('card-selfref');
     expect(result.success).toBe(false);
@@ -459,10 +453,7 @@ describe('GameEngine — removeCard', () => {
       synergies: [],
       tags: ['training'],
     });
-    const eng = loadedEngine(
-      { availableCards: ['card-provider', 'card-selfref'] },
-      [cardProvider, cardSelfRef]
-    );
+    const eng = loadedEngine({}, [cardProvider, cardSelfRef], ['card-provider', 'card-selfref']);
     eng.playCard('card-provider');
     eng.playCard('card-selfref');
     expect(eng.getInactiveCardIds().has('card-selfref')).toBe(false);
@@ -495,7 +486,7 @@ describe('GameEngine — campaign mode', () => {
 
   let engine;
   beforeEach(() => {
-    engine = loadedEngine();
+    engine = loadedEngine({}, undefined, []);
     engine.setupCampaign(campaign);
   });
 
@@ -515,7 +506,7 @@ describe('GameEngine — campaign mode', () => {
   });
 
   it('setupCampaign accepts custom encounterIndex', () => {
-    const eng = loadedEngine();
+    const eng = loadedEngine({}, undefined, []);
     eng.setupCampaign(campaign, 1);
     expect(eng.currentEncounterIndex).toBe(1);
   });
@@ -557,12 +548,12 @@ describe('GameEngine — campaign mode', () => {
     expect(engine.draftCard('nonexistent')).toBe(false);
   });
 
-  it('advanceEncounter increments index and clears board', () => {
+  it('advanceEncounter increments index and preserves board by default', () => {
     engine.playCard('card-a');
     const nextScenario = makeScenario({ id: 'test-scenario-2' });
     engine.advanceEncounter(nextScenario);
     expect(engine.currentEncounterIndex).toBe(1);
-    expect(engine.getBoardCardIds()).toEqual([]);
+    expect(engine.getBoardCardIds()).toEqual(['card-a']);
     expect(engine.scenario.id).toBe('test-scenario-2');
   });
 
@@ -580,13 +571,12 @@ describe('GameEngine — feasibility', () => {
     const engine = loadedEngine({
       baseMetrics: { x: { base: 10 } },
       goals: [{ metric: 'x', operator: '<=', value: 100 }],
-      availableCards: [],
-    }, []);
+    }, [], []);
     const result = engine.checkFeasibility();
     expect(result.feasible).toBe(true);
   });
 
-  it('finds a feasible combo from available cards', () => {
+  it('finds a feasible combo from hand cards', () => {
     const reducer = makeCard({
       id: 'reducer',
       effects: { latency: -30 },
@@ -607,8 +597,7 @@ describe('GameEngine — feasibility', () => {
         { metric: 'throughput', operator: '>=', value: 75 },
       ],
       totalResources: 10,
-      availableCards: ['reducer', 'booster'],
-    }, [reducer, booster]);
+    }, [reducer, booster], ['reducer', 'booster']);
     const result = engine.checkFeasibility();
     expect(result.feasible).toBe(true);
     expect(result.bestCombo).toContain('reducer');
@@ -625,8 +614,7 @@ describe('GameEngine — feasibility', () => {
       baseMetrics: { latency: { base: 100, lowerIsBetter: true } },
       goals: [{ metric: 'latency', operator: '<=', value: 5 }],
       totalResources: 10,
-      availableCards: ['weak'],
-    }, [weak]);
+    }, [weak], ['weak']);
     const result = engine.checkFeasibility();
     expect(result.feasible).toBe(false);
     expect(result.bestGoalsMet).toBe(0);
@@ -643,8 +631,7 @@ describe('GameEngine — feasibility', () => {
       baseMetrics: { latency: { base: 100, lowerIsBetter: true } },
       goals: [{ metric: 'latency', operator: '<=', value: 5 }],
       totalResources: 10,
-      availableCards: ['expensive'],
-    }, [expensive]);
+    }, [expensive], ['expensive']);
     const result = engine.checkFeasibility();
     expect(result.feasible).toBe(false);
   });
@@ -657,8 +644,7 @@ describe('GameEngine — feasibility', () => {
       baseMetrics: { x: { base: 0 } },
       goals: [{ metric: 'x', operator: '>=', value: 999 }],
       totalResources: 100,
-      availableCards: cards.map(c => c.id),
-    }, cards);
+    }, cards, cards.map(c => c.id));
     const result = engine.checkFeasibility();
     expect(result.feasible).toBe(true);
   });
@@ -687,7 +673,7 @@ describe('GameEngine — getState', () => {
   });
 
   it('includes campaign fields in campaign mode', () => {
-    const engine = loadedEngine();
+    const engine = loadedEngine({}, undefined, []);
     engine.setupCampaign({
       id: 'camp',
       encounters: [{ startingHand: ['card-a'], draftPool: [], draftPicks: 0 }],

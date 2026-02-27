@@ -4,10 +4,10 @@
   "description": "Build a production ML platform layer by layer — from your first model in training to a monitored, reliable serving system.",
   "deckId": "ml-infrastructure",
   "maxRetries": 3,
+  "startingHand": ["batch-training", "streaming-training", "data-warehouse"],
   "encounters": [
     {
       "scenarioId": "first-model",
-      "startingHand": ["batch-training", "streaming-training", "data-warehouse"],
       "draftPool": ["online-inference", "batch-inference", "feature-store", "experiment-tracker"],
       "draftPicks": 2,
       "draftHint": "Your model is trained. Now you need to serve predictions and make experiments reproducible. What will you add?"

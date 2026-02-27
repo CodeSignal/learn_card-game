@@ -223,8 +223,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid color-mix(in srgb, var(--Colors-Text-Body-White) 30%, transparent);
-  border-top-color: var(--Colors-Text-Body-White);
+  border: 2px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-top-color: currentColor;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -264,13 +264,13 @@
 
 .authoring-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   gap: 10px;
 }
 
 .authoring-card-preview {
-  background: color-mix(in srgb, var(--type-color) 6%, var(--Colors-Backgrounds-Main-Bottom));
-  border: 1px solid color-mix(in srgb, var(--type-color) 20%, var(--Colors-Stroke-Default));
+  background: color-mix(in srgb, var(--type-color) 12%, var(--Colors-Backgrounds-Main-Bottom));
+  border: 1px solid color-mix(in srgb, var(--type-color) 30%, var(--Colors-Stroke-Default));
   border-radius: 10px;
   padding: 12px 8px;
   text-align: center;
@@ -283,12 +283,25 @@
 
 .authoring-card-icon {
   font-size: 24px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.authoring-card-icon .card-icon-img {
+  width: 40px;
+  height: 40px;
 }
 
 .authoring-card-name {
   font: var(--Fonts-Body-Bold-sm);
   color: var(--Colors-Text-Body-Strong);
   line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .authoring-card-cost {
@@ -502,6 +515,125 @@
   border-radius: 3px;
 }
 
+/* Progress indicator */
+
+.authoring-progress {
+  margin-top: 14px;
+}
+
+.authoring-progress-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.authoring-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--Colors-Stroke-Default);
+  transition: background 0.2s;
+}
+
+.authoring-progress-dot.active {
+  background: var(--Colors-Primary-Default);
+}
+
+.authoring-progress-dot.done {
+  background: var(--Colors-Alert-Success-Default);
+}
+
+.authoring-progress-log {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.authoring-progress-log-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font: var(--Fonts-Body-Default-sm);
+}
+
+.authoring-progress-log-entry.pass {
+  color: var(--Colors-Alert-Success-Default);
+  background: color-mix(in srgb, var(--Colors-Alert-Success-Default) 8%, transparent);
+}
+
+.authoring-progress-log-entry.fail {
+  color: var(--Colors-Alert-Error-Default);
+  background: var(--Colors-Alert-Error-Lighter);
+}
+
+/* Generation result banner */
+
+.authoring-generation-result {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font: var(--Fonts-Body-Bold-sm);
+}
+
+.authoring-generation-result.pass {
+  color: var(--Colors-Alert-Success-Default);
+  background: color-mix(in srgb, var(--Colors-Alert-Success-Default) 10%, var(--Colors-Backgrounds-Main-Bottom));
+  border-left: 3px solid var(--Colors-Alert-Success-Default);
+}
+
+.authoring-generation-result.fail {
+  color: var(--Colors-Alert-Error-Default);
+  background: var(--Colors-Alert-Error-Lighter);
+  border-left: 3px solid var(--Colors-Alert-Error-Default);
+}
+
+/* Turn details in validation tab */
+
+.authoring-turn-summary {
+  cursor: pointer;
+  user-select: none;
+  font: var(--Fonts-Body-Bold-md);
+  color: var(--Colors-Text-Body-Strong);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.authoring-turn-summary-detail {
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Light);
+  margin-left: auto;
+}
+
+.authoring-turn-details {
+  padding: 8px 0 8px 8px;
+}
+
+.authoring-turn-details h5 {
+  font: var(--Fonts-Body-Bold-sm);
+  color: var(--Colors-Text-Body-Strong);
+  margin: 12px 0 6px;
+}
+
+.authoring-turn-details h5:first-child {
+  margin-top: 0;
+}
+
+.authoring-llm-feedback {
+  padding: 10px 12px;
+  background: var(--Colors-Backgrounds-Main-Bottom);
+  border-radius: 8px;
+  font: var(--Fonts-Body-Default-sm);
+  color: var(--Colors-Text-Body-Default);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* ===== DARK MODE: stronger type-color tint ===== */
 
 @media (prefers-color-scheme: dark) {
@@ -509,4 +641,5 @@
     background: color-mix(in srgb, var(--type-color) 14%, var(--Colors-Backgrounds-Main-Bottom));
     border-color: color-mix(in srgb, var(--type-color) 30%, var(--Colors-Stroke-Default));
   }
+
 }

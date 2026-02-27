@@ -5,22 +5,56 @@
   "deckId": "system-design-patterns",
   "totalResources": 12,
   "baseMetrics": {
-    "latency":     { "base": 400,  "unit": "ms",   "label": "Response Time",  "lowerIsBetter": true },
-    "throughput":  { "base": 1000, "unit": "req/s", "label": "Throughput",     "lowerIsBetter": false },
-    "reliability": { "base": 92.0, "unit": "%",     "label": "Uptime",         "lowerIsBetter": false, "cap": 99.99 },
-    "monthlyCost": { "base": 0,    "unit": "$/mo",  "label": "Monthly Cost",   "lowerIsBetter": true }
+    "latency": {
+      "base": 400,
+      "unit": "ms",
+      "label": "Response Time",
+      "lowerIsBetter": true
+    },
+    "throughput": {
+      "base": 1000,
+      "unit": "req/s",
+      "label": "Throughput",
+      "lowerIsBetter": false
+    },
+    "reliability": {
+      "base": 92,
+      "unit": "%",
+      "label": "Uptime",
+      "lowerIsBetter": false,
+      "cap": 99.99
+    },
+    "monthlyCost": {
+      "base": 0,
+      "unit": "$/mo",
+      "label": "Monthly Cost",
+      "lowerIsBetter": true
+    }
   },
   "goals": [
-    { "metric": "latency",      "operator": "<=", "value": 250,  "label": "Response time under 250ms" },
-    { "metric": "throughput",   "operator": ">=", "value": 7500, "label": "Handle 7.5K+ requests/sec" },
-    { "metric": "reliability",  "operator": ">=", "value": 99.0, "label": "99%+ uptime" },
-    { "metric": "monthlyCost",  "operator": "<=", "value": 1000, "label": "Under $1,000/month" }
-  ],
-  "availableCards": [
-    "event-driven-runtime", "thread-based-backend",
-    "relational-db", "document-store",
-    "in-memory-cache", "distributed-cache", "cdn", "reverse-proxy",
-    "load-balancer", "containerization", "message-queue", "search-engine",
-    "object-storage", "api-gateway"
+    {
+      "metric": "latency",
+      "operator": "<=",
+      "value": 250,
+      "label": "Response time under 250ms"
+    },
+    {
+      "metric": "throughput",
+      "operator": ">=",
+      "value": 7500,
+      "label": "Handle 7.5K+ requests/sec"
+    },
+    {
+      "metric": "reliability",
+      "operator": ">=",
+      "value": 99,
+      "label": "99%+ uptime"
+    },
+    {
+      "metric": "monthlyCost",
+      "operator": "<=",
+      "value": 1000,
+      "label": "Under $1,000/month"
+    }
   ]
 }

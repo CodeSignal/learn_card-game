@@ -1,5 +1,5 @@
 import { uiState } from '../modules/state.js';
-import { TYPE_COLORS, formatEffect, METRIC_LABELS, isAntiSynergy, renderIcon } from './shared.js';
+import { getTypeColor, formatEffect, METRIC_LABELS, isAntiSynergy, renderIcon } from './shared.js';
 import { hideTooltip } from './tooltip.js';
 
 let detailPanel = null;
@@ -14,7 +14,7 @@ export function showCardDetail(card) {
   const isOnBoard = uiState.engine.isOnBoard(card.id);
   const inactiveIds = uiState.engine.getInactiveCardIds();
   const isInactive = isOnBoard && inactiveIds.has(card.id);
-  const typeColor = TYPE_COLORS[card.type] || '#888';
+  const typeColor = getTypeColor(card.type);
 
   const effectRows = Object.entries(card.effects)
     .filter(([, v]) => v !== 0)
