@@ -4,4 +4,3 @@ dist/
 solution.json
 .env
 **/raw/
-client/public/data/icons/

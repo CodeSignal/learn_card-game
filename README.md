@@ -123,3 +123,18 @@ GitHub Actions workflow creates a release on push to `main`.
 ## License
 
 MIT
+
+## Future Work
+
+### Icon generation: in-memory approach
+Currently `POST /api/generate-icons` writes PNG files to `client/public/data/icons/<deckId>/`
+immediately on generation. This means icon files accumulate locally even when the deck is never
+exported.
+
+**Planned improvement:** decouple generation from disk writes:
+1. `POST /api/generate-icons` returns `{ iconData: "data:image/png;base64,..." }` — no disk write.
+   The client stores the data URL in `card.icon`; the authoring preview displays it normally.
+2. New `POST /api/save-icons` endpoint accepts `{ deckId, icons: [{ cardId, iconData }] }`,
+   writes PNGs to disk, and returns `[{ cardId, iconPath }]`.
+3. `handleExportAll` calls `save-icons` first, swaps data URLs → file paths in the deck JSON,
+   then downloads — so exported JSON always references real paths, not embedded base64.
